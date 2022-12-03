@@ -15,10 +15,9 @@ Então decidi começar esse projeto.
 Acho que antes de mais nada é bom dizer que a proposta é ser um projeto Open Source em que todos são super bem-vindos a colaborar. 
 
 A respeito das funcionalidades, a Tech Agenda quer ser um centralizador de eventos que estejam acontecendo ou estejam para acontecer nas áreas de:
-- Desenvolvimento de Softwares 
-- Criação de produtos Tech 
-- Design de produtos Tech 
-- Segurança da informação 
-- Devops 
-- etc. 
-
+- Desenvolvimento de Softwares #DEV
+- DevOps, Engenharia de Sistemas e Infra #DEVOPS
+- Criação de produtos Tech #PRODUCT
+- Design de produtos Tech #DESIGN
+- Gerenciamento de times tech #MGMT
+   
