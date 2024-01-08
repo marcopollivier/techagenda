@@ -1,8 +1,8 @@
 :root {
-    --primary: #101D28;
-    --secondary: #B47C49;
+    --primary: #8261C5;
+    --secondary: #101D28;
     --white: #E8EBEC;
-    --font-family-sans-serif: ` Poppins `, sans-serif;
+    --font-family-sans-serif: `Poppins`, sans-serif;
 }
 
 body {
@@ -119,19 +119,19 @@ body {
 
 /* services section */
 .service-item-one {
-    background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('img/service-fachada.jpeg'); 
+    background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('img/conferencia.jpg'); 
 }
 
 .service-item-two {
-    background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('img/service-pilotis.jpg'); 
+    background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('img/meetups.jpg'); 
 }
 
 .service-item-three {
-    background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('img/service-imper.jpg'); 
+    background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('img/workshops.jpg'); 
 }
 
 .service-item-four {
-    background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('img/service-cobertura.jpeg'); 
+    background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('img/palestras.jpg'); 
 }
 
 .service-item {
