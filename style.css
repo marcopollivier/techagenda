@@ -1,0 +1,206 @@
+:root {
+    --primary: #101D28;
+    --secondary: #B47C49;
+    --white: #E8EBEC;
+    --font-family-sans-serif: ` Poppins `, sans-serif;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    letter-spacing: 1px;
+    font-weight: normal;
+}
+
+/* Global configuration */
+.center-x-y {
+    /* TODO Adicionar prefixo global */
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+}
+
+.bg-primary {
+    /* TODO Adicionar prefixo global */
+    background-color: var(--primary) !important; /* TODO rever esse important */
+}
+
+.text-white {
+    /* TODO repensar a existencia dessa classe */
+    color: var(--white) !important;
+}
+
+.container-linha-horizontal {
+    max-width: 45vw; 
+    margin: 60px 0px;
+}
+
+.linha-horizontal {
+    border-top: 10px solid;
+    border-color: var(--secondary);
+    margin-top: 10px;
+}
+
+/* navbar */
+.navbar {
+    padding: 0rem 1rem;
+}
+
+.navbar-link-white {
+    color: var(--white); 
+    letter-spacing: 1px;
+    font-weight: normal;
+    font-size: 0.75rem;
+}
+
+.navbar-link-white {
+    color: var(--white) !important;
+}
+
+.navbar-light .navbar-toggler-icon {
+    /* TODO repensar se adicionar um png vale a pena */
+    background-image: url('img/menu-mobile.png');
+}
+
+.logo {
+    max-height: 40px;
+}
+
+/* main section */
+.main-bg-img {
+    background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('img/main-bg-img.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    height: 70vh;
+}
+
+.main-logo {
+    /* TODO tentar aplicar proporcoes diferentes pra dispositivos diferentes */
+    width: 80vw;
+    max-width: 330px;
+}
+
+/* lead section */
+.lead-container {
+    max-width: 70vw;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+.lead-img-container {
+    background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('img/lead-img.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    max-width: 200px;
+    height: 40vh;
+}
+
+.lead-title {
+    font-size: 2rem;
+    font-weight: 300;
+    line-height: 1.2;
+    color: var(--secondary);
+    margin: 0.5rem 0;
+}
+
+.lead-text {
+    font-size: 1rem;
+    font-weight: 300;
+    margin-top: 20px;
+    text-align: justify;
+    text-justify: inter-character;
+}
+
+/* about section */
+.about-title {
+    font-size: 1.75rem;
+}
+
+/* services section */
+.service-item-one {
+    background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('img/service-fachada.jpeg'); 
+}
+
+.service-item-two {
+    background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('img/service-pilotis.jpg'); 
+}
+
+.service-item-three {
+    background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('img/service-imper.jpg'); 
+}
+
+.service-item-four {
+    background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('img/service-cobertura.jpeg'); 
+}
+
+.service-item {
+    background-repeat: no-repeat; 
+    background-size: cover; 
+    background-position: center; 
+    height: 45vh;
+}
+
+.service-item-text {
+    font-size: 1.25rem;
+    font-weight: 300;
+}
+
+.service-item-icon {
+    max-width: 140px;
+}
+
+/* values section */
+.overlay-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 10px 20px;
+    font-size: 1.25rem;
+    text-align: center;
+    color: var(--secondary) !important;
+}
+
+.square-valores {
+    height: 150px;
+    width: 240px;
+    background-color: #E2E2E1;
+    border-radius: 0 50px;
+}
+
+/* medias */
+@media(max-width: 480px) {
+    .lead-container {
+        max-width: 70vw;
+        margin: 0 auto;
+        padding: 0 0;
+    }
+        
+    .lead-img-container {
+        max-width: 80vw;
+        min-width: 80vw;
+        width: 80vw;
+    }
+    
+    .lead-title {
+        font-size: 2rem;
+        font-weight: 300;
+        line-height: 1.2;
+        color: var(--secondary);
+    }
+    
+    .lead-text {
+        font-size: 1rem;
+        font-weight: 300;
+        margin-top: 20px;
+        width: 80vw;
+        letter-spacing: 0px;
+    }
+
+    .container-linha-horizontal {
+        max-width: 90vw; 
+        margin: 60px 0px;
+    }
+}
+
