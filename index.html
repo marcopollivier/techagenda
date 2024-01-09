@@ -55,62 +55,22 @@
         </div>
     </nav>
 
-    <section id="about" class="py-5 bg-primary ">
+    <section id="main" class="py-5 bg-primary">
         <div class="container">
-            <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
-                
-                <ol class="carousel-indicators">
-                  <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
-                  <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
-                  <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
-                  <li data-target="#carouselExampleIndicators" data-slide-to="3"></li>
-                  <li data-target="#carouselExampleIndicators" data-slide-to="4"></li>
-                </ol>
-                
-                <div class="carousel-inner">
-
-                  <div class="carousel-item active">
-                    <img class="d-block w-100" src="img/slide-first.png" alt="First slide">
-                    <div class="carousel-caption d-none d-md-block">
-                        <h5>Primeiro evento</h5>
-                        <p>primeiro evento descricao</p>
-                    </div>
-                  </div>
-                  <div class="carousel-item">
-                    <img class="d-block w-100" src="img/slide-second.png" alt="Second slide">
-                    <div class="carousel-caption d-none d-md-block">
-                        <h5>Segundo Evento</h5>
-                        <p>Segundo evento descricao</p>
-                    </div>
-                  </div>
-                  <div class="carousel-item">
-                    <img class="d-block w-100" src="img/slide-third.png" alt="Third slide">
-                    <div class="carousel-caption d-none d-md-block">
-                        <h5>Terceiro evento</h5>
-                        <p>terceiro evento</p>
-                    </div>
-                  </div>
-                  <div class="carousel-item">
-                    <img class="d-block w-100" src="img/slide-third.png" alt="Third slide">
-                    <div class="carousel-caption d-none d-md-block">
-                        <h5>Terceiro evento</h5>
-                        <p>terceiro evento</p>
-                    </div>
-                  </div>
-                  
-                </div>
-                
-                <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
-                  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                  <span class="sr-only">Previous</span>
-                </a>
-                <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
-                  <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                  <span class="sr-only">Next</span>
-                </a>
-              </div>
+          <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+            <ol class="carousel-indicators" id="carousel-indicators"></ol>
+            <div class="carousel-inner" id="carousel-inner"></div>
+            <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="sr-only">Previous</span>
+            </a>
+            <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="sr-only">Next</span>
+            </a>
+          </div>
         </div>
-    </section>
+      </section>
 
     <!-- lead section -->
     <section id="lead" class="py-5">
@@ -250,6 +210,122 @@
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script>
+    // Seu JSON
+    const jsonData = {
+      "seasons": [
+        {
+          "year": 2024,
+          "events": [
+                {
+                    "id": "gopherconbr",
+                    "title": "GopherCon Brasil",
+                    "description": "O maior evento de Go da América Latina",
+                    "banner": "img/gopherconbr/logo.png",
+                    "href": "https://gopherconbr.org/",
+                    "online": false,
+                    "inPerson": true,
+                    "begin": "2023-05-09 00:00:00",
+                    "end": "2023-05-10 23:59:00",
+                    "venue": [{
+                        "alias": "CentroSul - Florianopolis - SC",
+                        "address": "Av. Gov. Gustavo Richard, 850 - Centro, Florianópolis - SC, 88010-290",
+                        "lat": "-27.601996145321202",
+                        "long": "-48.55201843558214"
+                    }],
+                    "cfp": {
+                        "begin": "",
+                        "end": "",
+                        "href": ""
+                    },
+                    "tags": ["dev", "go", "golang"]
+                },
+                {
+                    "id": "tdc-summit-sp",
+                    "title": "TDC SUMMIT SÃO PAULO",
+                    "description": "INTELIGÊNCIA ARTIFICIAL,TECNOLOGIA,NEGÓCIOS E VOCÊ!",
+                    "href": "https://thedevconf.com/tdc/2024/summit-sao-paulo/",
+                    "online": true,
+                    "inPerson": true,
+                    "begin": "2023-03-26 00:00:00",
+                    "end": "2023-03-27 23:59:00",
+                    "venue": [{
+                        "alias": "Centro de Convenções Rebouças",
+                        "address": "Av.Rebouças, 600 Pinheiros - São Paulo - SP",
+                        "lat": "-23.55736284085273",
+                        "long": "-46.66796755767078"
+                    }],
+                    "cfp": {
+                        "begin": "",
+                        "end": "",
+                        "href": ""
+                    },
+                    "tags": ["dev", "go", "golang"]
+                }
+          ]
+        }
+      ]
+    };
+
+    async function loadJSON() {
+            try {
+                const response = await fetch('eventos.json');
+                const data = await response.json();
+                // return data;
+                return jsonData;
+            } catch (error) {
+                console.error('Erro ao carregar o arquivo JSON:', error);
+            }
+        }
+
+    // Função para criar os elementos do carrossel
+    function createCarouselElements(data) {
+      const carouselIndicators = document.getElementById('carousel-indicators');
+      const carouselInner = document.getElementById('carousel-inner');
+
+      data.seasons[0].events.forEach((event, index) => {
+        // Criação de indicadores
+        const indicator = document.createElement('li');
+        indicator.setAttribute('data-target', '#carouselExampleIndicators');
+        indicator.setAttribute('data-slide-to', index);
+        if (index === 0) {
+          indicator.classList.add('active');
+        }
+        carouselIndicators.appendChild(indicator);
+
+        // Criação de itens do carrossel
+        const carouselItem = document.createElement('div');
+        carouselItem.classList.add('carousel-item');
+        carouselItem.classList.add('bg-neutral');
+        if (index === 0) {
+          carouselItem.classList.add('active');
+        }
+
+        const carouselItemLink = document.createElement('a');
+        carouselItemLink.setAttribute('href', event.href);
+        carouselItemLink.setAttribute('target', '_blank');
+
+        // Criação de imagens (substitua 'img/slide-first.png' pelo caminho real da imagem)
+        const image = document.createElement('img');
+        image.classList.add('d-block', 'carousel-img');
+        image.setAttribute('src', event.banner || 'img/slide-default.png');
+        image.setAttribute('alt', event.title);
+
+        // Criação de caption
+        const caption = document.createElement('div');
+        caption.classList.add('carousel-caption', 'd-none', 'd-md-block', 'bg-primary', 'text-white');
+        caption.innerHTML = `<h5>${event.title}</h5><p>${event.description}</p>`;
+
+        carouselItem.appendChild(carouselItemLink);
+        carouselItemLink.appendChild(image);
+        carouselItemLink.appendChild(caption);
+        carouselInner.appendChild(carouselItem);
+      });
+    }
+
+    // Chamada da função com o JSON fornecido
+    createCarouselElements(jsonData);
+  </script>
 
 </body>
 
