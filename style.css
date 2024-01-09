@@ -24,6 +24,16 @@ body {
     background-color: var(--primary) !important; /* TODO rever esse important */
 }
 
+.bg-secondary {
+    /* TODO Adicionar prefixo global */
+    background-color: var(--secondary) !important; /* TODO rever esse important */
+}
+
+.bg-neutral {
+    /* TODO Adicionar prefixo global */
+    background-color: var(--white) !important; /* TODO rever esse important */
+}
+
 .text-white {
     /* TODO repensar a existencia dessa classe */
     color: var(--white) !important;
@@ -204,3 +214,14 @@ body {
     }
 }
 
+
+
+.carousel-img {
+    max-width: 70vh;
+    margin: auto;
+  }
+
+
+  #map {
+    height: 70vh;
+  }
