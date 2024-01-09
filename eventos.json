@@ -1,6 +1,33 @@
 {
     "seasons": [
         {
+            "year": 2024,
+            "events": [
+                {
+                    "title": "GopherCon Brasil",
+                    "banner": "https://github.com/gopherconbr/gopherconbr.org/blob/master/themes/gopherconbr/static/images/logo-horizontal.png",
+                    "description": "O maior evento de Go da América Latina",
+                    "href": "https://gopherconbr.org/",
+                    "online": false,
+                    "inPerson": true,
+                    "begin": "2023-05-09 00:00:00",
+                    "end": "2023-05-10 23:59:00",
+                    "venue": [{
+                        "alias": "CentroSul - Florianopolis - SC",
+                        "address": "Av. Gov. Gustavo Richard, 850 - Centro, Florianópolis - SC, 88010-290",
+                        "lat": "-27.601996145321202",
+                        "long": "-48.55201843558214"
+                    }],
+                    "cfp": {
+                        "begin": "",
+                        "end": "",
+                        "href": ""
+                    },
+                    "tags": ["dev", "go", "golang"]
+                }
+            ]
+        },
+        {
             "year": 2023,
             "events": [
                 {
