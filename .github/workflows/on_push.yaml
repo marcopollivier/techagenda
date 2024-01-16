@@ -1,0 +1,54 @@
+name: on push
+
+on:
+  push:
+    branches:
+      - '**'
+    tags-ignore:
+      - '*.*'
+    paths-ignore:
+      - README.md
+      - .github/*
+      - docs/*
+
+env:
+  GIT_USERNAME: '${{ github.actor }}'
+  GIT_EMAIL: github-actions@github.com
+  PA_TOKEN: '${{ secrets.GHA_PAT }}'
+
+jobs:
+  lint:
+    permissions:
+      contents: read
+      id-token: write
+    name: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-go@v4.1.0
+        with:
+          go-version: 1.21.5
+          cache: false
+      - uses: actions/checkout@v3
+
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v3
+        with:
+          version: latest
+          install-mode: goinstall
+          skip-pkg-cache: true
+          
+  test:
+    permissions:
+      contents: read
+      id-token: write
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Go
+        uses: actions/setup-go@v4.1.0
+        with:
+          go-version: 1.21.5
+      - name: Test
+        run: go test ./...
