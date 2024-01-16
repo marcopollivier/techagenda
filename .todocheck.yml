@@ -1,0 +1,4 @@
+origin: github.com/marcopollivier/techagenda
+issue_tracker: GITHUB
+auth:
+  type: apitoken
