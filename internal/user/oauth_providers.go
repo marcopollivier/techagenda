@@ -1,6 +1,7 @@
 package user
 
 import (
+	"fmt"
 	"log/slog"
 
 	"github.com/markbates/goth"
@@ -17,7 +18,7 @@ func registerProviders() {
 		github.New(
 			cfg.Providers.Github.Key,
 			cfg.Providers.Github.Secret,
-			"http://localhost:8000/auth/github/callback",
+			fmt.Sprintf("%s/auth/github/callback", cfg.AppHost),
 			"user",
 		),
 	)
