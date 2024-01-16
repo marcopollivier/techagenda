@@ -8,6 +8,7 @@ import (
 	"github.com/spf13/cobra"
 	"go.uber.org/fx"
 
+	"github.com/marcopollivier/techagenda/internal/static"
 	"github.com/marcopollivier/techagenda/internal/user"
 	"github.com/marcopollivier/techagenda/lib/database"
 	_ "github.com/marcopollivier/techagenda/lib/logger"
@@ -23,6 +24,7 @@ var rootCmd = &cobra.Command{
 		fx.New(
 			fx.Provide(database.NewDB),
 			fx.Provide(server.NewHTTPServer),
+			static.Module(),
 			user.Module(),
 			// event.Module(),
 			// attendee.Module(),
