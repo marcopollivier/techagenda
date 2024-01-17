@@ -1,0 +1,4 @@
+issues:
+  exclude-rules:
+    - path: internal/user/handler_oauth.go
+      text: 'SA1029: should not use built-in type string as key for value; define your own type to avoid collisions'

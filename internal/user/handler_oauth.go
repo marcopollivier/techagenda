@@ -55,7 +55,10 @@ func (h *UserHandler) AuthLogout(c echo.Context) (err error) {
 	ctx = context.WithValue(ctx, "provider", providerRaw)
 	c.SetRequest(c.Request().WithContext(ctx))
 
-	gothic.Logout(res, req)
+	if err = gothic.Logout(res, req); err != nil {
+		slog.Error("Fail to execute logout", "error", err.Error())
+		return
+	}
 	res.Header().Set("Location", "/")
 	res.WriteHeader(http.StatusTemporaryRedirect)
 	return
