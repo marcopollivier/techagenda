@@ -9,6 +9,7 @@ RUN go build -a -ldflags "-s -w -X 'github.com/marcopollivier/techagenda/lib/con
 
 # Release image layer
 # TODO: Find a way to send a scratch image to heroko
+# TODO: Find a way to send a scratch image to heroko or make a smaller final image
 # FROM scratch
 # COPY --from=alpine:latest /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 FROM alpine:latest
