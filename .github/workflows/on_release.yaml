@@ -1,0 +1,28 @@
+name: On release push
+
+on:
+  push:
+    tags:
+      - "v*"
+
+env:
+  ENVIRONMENT: "prod"
+  GIT_USERNAME: ${{ github.actor }}
+  GIT_EMAIL: "github-actions@github.com"
+  PA_TOKEN: ${{ secrets.GHA_PAT }}
+  HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set output
+      id: vars
+      run: echo "tag=${GITHUB_REF#refs/*/}" >> $GITHUB_OUTPUT
+    - name: Login to Heroku Container registry
+      run: heroku container:login 
+    - name: Build and push
+      run: heroku container:push -a ${{ secrets.HEROKU_APP_NAME }} web --arg VERSION=${{ steps.vars.outputs.tag }}
+    - name: Release
+      run: heroku container:release -a ${{ secrets.HEROKU_APP_NAME }} web 

@@ -1,0 +1,25 @@
+name: On merge with main
+
+on:
+  push:
+    branches:
+      - 'main'
+    tags-ignore:
+      - '*.*'
+
+env:
+  GIT_USERNAME: ${{ github.actor }}
+  GIT_EMAIL: "github-actions@github.com"
+  TODOCHECK_AUTH_TOKEN: ${{ secrets.GHA_PAT }} 
+
+jobs:
+  create-issues:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Download todocheck
+        run: |
+          curl -fsSL "https://github.com/preslavmihaylov/todocheck/releases/download/v0.6.1/todocheck-v0.6.1-linux-x86_64" -o todocheck
+          chmod +x  todocheck
+      - name: Run todocheck
+        run: ./todocheck --basepath .
