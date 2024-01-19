@@ -3,12 +3,16 @@ module github.com/marcopollivier/techagenda
 go 1.21.5
 
 require (
+	github.com/buger/jsonparser v1.1.1 // indirect
 	github.com/caarlos0/env/v10 v10.0.0 // indirect
+	github.com/evanw/esbuild v0.19.11 // indirect
+	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/gorilla/context v1.1.1 // indirect
 	github.com/gorilla/mux v1.6.2 // indirect
 	github.com/gorilla/securecookie v1.1.1 // indirect
 	github.com/gorilla/sessions v1.1.1 // indirect
+	github.com/gorilla/websocket v1.5.1 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20231201235250-de7065d80cb9 // indirect
@@ -22,11 +26,15 @@ require (
 	github.com/markbates/goth v1.78.0 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
+	github.com/natewong1313/go-react-ssr v0.1.15 // indirect
 	github.com/pressly/goose/v3 v3.17.0 // indirect
+	github.com/rs/zerolog v1.31.0 // indirect
 	github.com/samber/lo v1.39.0 // indirect
 	github.com/sethvargo/go-retry v0.2.4 // indirect
 	github.com/spf13/cobra v1.8.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
+	github.com/tkrajina/go-reflector v0.5.6 // indirect
+	github.com/tkrajina/typescriptify-golang-structs v0.1.11 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.2 // indirect
 	go.uber.org/atomic v1.11.0 // indirect

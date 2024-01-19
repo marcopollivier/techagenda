@@ -13,7 +13,7 @@ RUN go build -a -ldflags "-s -w -X 'github.com/marcopollivier/techagenda/lib/con
 # FROM scratch
 # COPY --from=alpine:latest /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 FROM alpine:latest
-COPY --from=builder /app/techagenda /techagenda
-COPY --from=builder /app/public /public
+COPY --from=builder /pkg/techagenda /techagenda
+COPY --from=builder /pkg/public /public
 CMD ./techagenda
 

@@ -5,7 +5,7 @@ import (
 
 	"gorm.io/gorm"
 
-	"github.com/marcopollivier/techagenda/internal/user"
+	"github.com/marcopollivier/techagenda/pkg/user"
 )
 
 type Event struct {

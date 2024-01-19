@@ -3,8 +3,8 @@ package attendee
 import (
 	"gorm.io/gorm"
 
-	"github.com/marcopollivier/techagenda/internal/event"
-	"github.com/marcopollivier/techagenda/internal/user"
+	"github.com/marcopollivier/techagenda/pkg/event"
+	"github.com/marcopollivier/techagenda/pkg/user"
 )
 
 type Attendee struct {
