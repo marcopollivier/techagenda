@@ -11,7 +11,7 @@ import (
 )
 
 func NewLendingHandler(server *echo.Echo) {
-	engine, err := ssr.New("./ui/generated_props.lending.ts", "pkg/lending/props.go")
+	engine, err := ssr.New("lending", "pkg/lending/props.go")
 	if err != nil {
 		slog.Error("Fail to start SSR engine", "error", err)
 		panic(err)

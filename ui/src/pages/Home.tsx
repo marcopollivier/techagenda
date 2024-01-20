@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { IndexRouteProps } from "../generated";
+import { IndexRouteProps } from "../props/lending.generated";
 import GoLogo from "../../public/go.png";
 import ReactLogo from "../../public/react.png";
 import Counter from "../components/Counter";
