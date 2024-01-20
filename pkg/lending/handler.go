@@ -7,20 +7,11 @@ import (
 	"github.com/labstack/echo/v4"
 	gossr "github.com/natewong1313/go-react-ssr"
 
-	"github.com/marcopollivier/techagenda/lib/config"
+	"github.com/marcopollivier/techagenda/lib/ssr"
 )
 
 func NewLendingHandler(server *echo.Echo) {
-	cfg := config.Get()
-	engine, err := gossr.New(gossr.Config{
-		AppEnv:             cfg.Environment,
-		AssetRoute:         "/assets",
-		FrontendDir:        "./ui/src",
-		GeneratedTypesPath: "./ui/src/generated.d.ts",
-		TailwindConfigPath: "./ui/tailwind.config.js",
-		LayoutCSSFilePath:  "main.css",
-		PropsStructsPath:   "./pkg/lending/props.go",
-	})
+	engine, err := ssr.New("./ui/generated_props.lending.ts", "pkg/lending/props.go")
 	if err != nil {
 		slog.Error("Fail to start SSR engine", "error", err)
 		panic(err)
