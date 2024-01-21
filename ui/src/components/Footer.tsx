@@ -1,7 +1,13 @@
+import { useEffect } from 'react';
 import TechAgendaLogoFooter from "../../public/logo.svg";
 import { ChevronUpIcon } from '@heroicons/react/20/solid';
 
 export default function Footer() {
+
+    useEffect(() => {
+        window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+    }, []);
+
     return (
         <div className="bg-white">
             <div className="mx-auto">
@@ -15,6 +21,9 @@ export default function Footer() {
                     </div>
                     <div className="relative flex items-center justify-between">
                         <button
+                            onClick={() => {
+                                window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+                            }}
                             type="button"
                             className="inline-flex items-center rounded-full text-center px-6 py-2 text-sm font-medium shadow-sm bg-blue-500 text-white hover:bg-gray-100 hover:text-blue-500 shadow-lg ring-1 ring-black ring-opacity-5"
                         >
