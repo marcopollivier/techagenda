@@ -1,4 +1,4 @@
-import TechAgendaLogoFooter from "../../public/logo_footer.svg";
+import TechAgendaLogoFooter from "../../public/logo.svg";
 
 export default function Footer() {
     return (
@@ -7,7 +7,7 @@ export default function Footer() {
                 <div className="relative flex h-32 items-center justify-between">
                     <div className="flex flex-shrink-0 items-center">
                         <img
-                            className="h-20 w-auto"
+                            className="h-10 w-auto"
                             src={TechAgendaLogoFooter}
                             alt="TechAgenda"
                         />
