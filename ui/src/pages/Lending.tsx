@@ -7,7 +7,7 @@ function Lending() {
     //const [count, setCount] = useState(initialCount);
 
     return (
-        <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-20">
+        <div className="mx-auto max-w-8xl px-20 sm:px-30 lg:px-20">
             <Header />
             <a>test</a>
             <Footer />
