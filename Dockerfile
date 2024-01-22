@@ -7,13 +7,17 @@ RUN go mod download
 ENV CGO_ENABLED=0 GO111MODULE=on GOOS=linux
 RUN go build -a -ldflags "-s -w -X 'github.com/marcopollivier/techagenda/lib/config.version=$VERSION'" -o techagenda .
 
+# Download frontend deps
+FROM node:16-alpine as frontend
+ADD ./ui /ui
+WORKDIR /ui
+RUN npm install
+
 # Release image layer
-# TODO: Find a way to send a scratch image to heroko
-# TODO: Find a way to send a scratch image to heroko or make a smaller final image
-# FROM scratch
-# COPY --from=alpine:latest /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
-FROM alpine:latest
-COPY --from=builder /pkg/techagenda /techagenda
-COPY --from=builder /pkg/public /public
+FROM node:16-alpine
+WORKDIR /app
+COPY --from=builder /app/techagenda ./techagenda
+COPY --from=builder /app/public ./public
+COPY --from=frontend /ui ./ui
 CMD ./techagenda
 
