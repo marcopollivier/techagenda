@@ -8,7 +8,10 @@
     "preline": "^2.0.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "flowbite": "^2.2.1",
+    "flowbite-react": "^0.7.2",
+    "react-world-flags": "^1.6.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.21",
