@@ -4,6 +4,7 @@
     "@heroicons/react": "^2.1.1",
     "flowbite": "^2.2.1",
     "flowbite-react": "^0.7.2",
+    "react-world-flags": "^1.6.0",
     "tailwindcss": "^3.4.1"
   }
 }

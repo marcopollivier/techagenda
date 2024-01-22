@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import TechAgendaLogoFooter from "../../public/logo.svg";
 import { ChevronUpIcon } from '@heroicons/react/20/solid';
+import Flag from 'react-world-flags';
 
 export default function Footer() {
 
@@ -44,7 +45,11 @@ export default function Footer() {
                         </div>
                         <p className="hover:bg-blue-500 hover:text-white rounded-full px-3 py-1 text-sm">Termos</p>
                     </div>
-                    <p className="flex self-en">Construído com tecnologia brasileira</p>
+                    <div className='flex self-en justify-between'>
+                        <p>Construído com tecnologia brasileira</p>
+                        <Flag code="BRA" className="h-6 pl-2" />
+                    </div>
+
                 </div>
             </div>
         </div>
