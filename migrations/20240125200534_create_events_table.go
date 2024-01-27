@@ -28,7 +28,6 @@ func upCreateEventsTable(ctx context.Context, tx *sql.Tx) error {
 			end_date         TIMESTAMP NOT NULL,
 
 			user_id	   		 BIGINT NOT NULL REFERENCES users(id),
-			cfp_id	    	 BIGINT REFERENCES cfps(id),
 
 			created_at  	 TIMESTAMP DEFAULT now(),
 			updated_at  	 TIMESTAMP DEFAULT now(),
@@ -37,7 +36,6 @@ func upCreateEventsTable(ctx context.Context, tx *sql.Tx) error {
 		CREATE UNIQUE INDEX ON events (href) WHERE href is not null;
 		CREATE INDEX ON events (title);
 		CREATE INDEX ON events USING GIN (type_of);
-		CREATE INDEX ON events (cfp_id) where cfp_id is not null;
 		CREATE INDEX ON events (begin_date, end_date);
 		CREATE INDEX ON events (created_at);
 
