@@ -6,6 +6,7 @@ export interface Cfp {
     CreatedAt: Time;
     UpdatedAt: Time;
     DeletedAt: DeletedAt;
+    EventID: number;
     begin: Time;
     end: Time;
     href: string;
@@ -70,7 +71,6 @@ export interface Event {
     type_of: string[];
     begin: Time;
     end: Time;
-    cfp_id: number;
     user_id: number;
     attendees: Attendee[];
     tags: Tags[];
