@@ -34,7 +34,7 @@ var (
 				arguments = []string{}
 				command   = args[0]
 			)
-			slog.Info("Running migrator command!", "cmd", cmd.Short, "args", args)
+			slog.Info("Running migrator command!", "cmd", command, "args", args)
 			if db, err = goose.OpenDBWithDriver("postgres", dsn); err != nil {
 				slog.Error("goose: failed to open DB", "error", err.Error())
 				return err
@@ -46,8 +46,8 @@ var (
 				}
 			}()
 
-			if len(args) > 3 {
-				arguments = append(arguments, args[3:]...)
+			if len(args) > 1 {
+				arguments = append(arguments, args[1:]...)
 			}
 
 			if err = goose.RunContext(context.Background(), command, db, dir, arguments...); err != nil {

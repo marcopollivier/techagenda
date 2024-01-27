@@ -11,6 +11,7 @@ import (
 	"github.com/marcopollivier/techagenda/lib/database"
 	_ "github.com/marcopollivier/techagenda/lib/logger"
 	"github.com/marcopollivier/techagenda/lib/server"
+	"github.com/marcopollivier/techagenda/pkg/event"
 	"github.com/marcopollivier/techagenda/pkg/lending"
 	"github.com/marcopollivier/techagenda/pkg/static"
 	"github.com/marcopollivier/techagenda/pkg/user"
@@ -26,10 +27,10 @@ var rootCmd = &cobra.Command{
 			fx.Provide(database.NewDB),
 			fx.Provide(server.NewHTTPServer),
 			static.Module(),
-			lending.Module(),
 			user.Module(),
-			// event.Module(),
+			event.Module(),
 			// attendee.Module(),
+			lending.Module(),
 		).Run()
 	},
 }
