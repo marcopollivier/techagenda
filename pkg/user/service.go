@@ -47,8 +47,10 @@ func (s *UserService) Auth(ctx context.Context, oauthUser goth.User) (user User,
 
 			slog.WarnContext(ctx, "No user found to this oauth link, creating a new one")
 			user = User{
-				Email: oauthUser.Email,
-				Name:  oauthUser.Name,
+				Email:  oauthUser.Email,
+				Name:   oauthUser.Name,
+				Avatar: oauthUser.AvatarURL,
+				Bio:    oauthUser.Description,
 			}
 			if err = s.db.WithContext(ctx).Create(&user).Error; err != nil {
 				slog.ErrorContext(ctx, "Fail to create new user", "error", err.Error())
@@ -75,19 +77,31 @@ func (s *UserService) Auth(ctx context.Context, oauthUser goth.User) (user User,
 	}
 
 	// If oauth is linked with a user just return the user
-	return s.Get(ctx, oauth.UserID)
+	if user, err = s.Get(ctx, oauth.UserID); err != nil {
+		return
+	}
+
+	go func() {
+		if user.Avatar != oauthUser.AvatarURL {
+			user.Avatar = oauthUser.AvatarURL
+			if errI := s.db.WithContext(ctx).Where("id = ?", user.ID).Updates(&user).Error; errI != nil {
+				slog.ErrorContext(ctx, "Unable to update users avatar!", "user", user.ID, "error", err.Error())
+			}
+		}
+	}()
+	return
 }
 
 func (s *UserService) Get(ctx context.Context, userID uint) (user User, err error) {
 	if err = s.db.WithContext(ctx).Where("id = ?", userID).First(&user).Error; err != nil {
-		slog.ErrorContext(ctx, "Unable to find user!", "user", userID)
+		slog.ErrorContext(ctx, "Unable to find user!", "user", userID, "error", err.Error())
 	}
 	return user, err
 }
 
 func (s *UserService) ListAll(ctx context.Context, role Role) (users []User, err error) {
 	if err = s.db.WithContext(ctx).Model(new(User)).Where("role = ?", role.String()).Scan(&users).Error; err != nil {
-		slog.ErrorContext(ctx, fmt.Sprintf("Fail to list users of role %s", role))
+		slog.ErrorContext(ctx, fmt.Sprintf("Fail to list users of role %s", role), "error", err.Error())
 	}
 	return users, err
 }

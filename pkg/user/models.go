@@ -6,9 +6,11 @@ import "gorm.io/gorm"
 
 type User struct {
 	gorm.Model
-	Email string
-	Name  string
-	Role  Role
+	Email  string
+	Name   string
+	Role   Role
+	Bio    string
+	Avatar string
 }
 
 func (u *User) IsAdmin() bool { return u.Role == RoleAdmin }

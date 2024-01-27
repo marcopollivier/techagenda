@@ -3,5 +3,7 @@ package event
 import "go.uber.org/fx"
 
 func Module() fx.Option {
-	return fx.Module("event")
+	return fx.Module("event",
+		fx.Provide(NewEventService),
+	)
 }
