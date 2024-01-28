@@ -11,6 +11,7 @@ import (
 	"github.com/marcopollivier/techagenda/lib/database"
 	_ "github.com/marcopollivier/techagenda/lib/logger"
 	"github.com/marcopollivier/techagenda/lib/server"
+	"github.com/marcopollivier/techagenda/lib/ssr"
 	"github.com/marcopollivier/techagenda/pkg/event"
 	"github.com/marcopollivier/techagenda/pkg/lending"
 	"github.com/marcopollivier/techagenda/pkg/static"
@@ -26,6 +27,7 @@ var rootCmd = &cobra.Command{
 		fx.New(
 			fx.Provide(database.NewDB),
 			fx.Provide(server.NewHTTPServer),
+			ssr.Module(),
 			static.Module(),
 			user.Module(),
 			event.Module(),

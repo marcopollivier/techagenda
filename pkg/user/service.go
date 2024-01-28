@@ -84,8 +84,8 @@ func (s *UserService) Auth(ctx context.Context, oauthUser goth.User) (user User,
 	go func() {
 		if user.Avatar != oauthUser.AvatarURL {
 			user.Avatar = oauthUser.AvatarURL
-			if errI := s.db.WithContext(ctx).Where("id = ?", user.ID).Updates(&user).Error; errI != nil {
-				slog.ErrorContext(ctx, "Unable to update users avatar!", "user", user.ID, "error", err.Error())
+			if errI := s.db.Where("id = ?", user.ID).Updates(&user).Error; errI != nil {
+				slog.ErrorContext(ctx, "Unable to update users avatar!", "user", user.ID, "error", errI.Error())
 			}
 		}
 	}()

@@ -29,17 +29,6 @@ export interface Tags {
     DeletedAt: DeletedAt;
     tag: string;
 }
-export interface User {
-    ID: number;
-    CreatedAt: Time;
-    UpdatedAt: Time;
-    DeletedAt: DeletedAt;
-    Email: string;
-    Name: string;
-    Role: number;
-    Bio: string;
-    Avatar: string;
-}
 export interface Attendee {
     ID: number;
     CreatedAt: Time;
@@ -51,13 +40,6 @@ export interface Attendee {
     EventID: number;
     UserID: number;
     User: User;
-}
-export interface DeletedAt {
-    Time: Time;
-    Valid: boolean;
-}
-export interface Time {
-
 }
 export interface Event {
     ID: number;
@@ -78,6 +60,26 @@ export interface Event {
     cfp: Cfp;
     user: User;
 }
+export interface DeletedAt {
+    Time: Time;
+    Valid: boolean;
+}
+export interface Time {
+
+}
+export interface User {
+    ID: number;
+    CreatedAt: Time;
+    UpdatedAt: Time;
+    DeletedAt: DeletedAt;
+    Email: string;
+    Name: string;
+    Role: number;
+    Bio: string;
+    Avatar: string;
+}
 export interface Props {
+    User: User;
+    Event: Event;
     Events: Event[];
 }

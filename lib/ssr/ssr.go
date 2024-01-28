@@ -1,7 +1,7 @@
 package ssr
 
 import (
-	"fmt"
+	"log/slog"
 
 	gossr "github.com/natewong1313/go-react-ssr"
 
@@ -16,18 +16,23 @@ type Engine struct {
 	*gossr.Engine
 }
 
-func New(generatedTypesName, propsStructsPath string) (*Engine, error) {
+func NewEngine() *Engine {
 	cfg := config.Get()
 
 	engine, err := gossr.New(gossr.Config{
 		AppEnv:             cfg.Environment,
 		AssetRoute:         "/assets",
 		FrontendDir:        "./ui/src",
-		GeneratedTypesPath: fmt.Sprintf("./ui/src/props/%s.generated.ts", generatedTypesName),
+		GeneratedTypesPath: "./ui/src/props/generated.ts",
 		TailwindConfigPath: "./ui/tailwind.config.js",
 		LayoutCSSFilePath:  "main.css",
-		PropsStructsPath:   propsStructsPath,
+		PropsStructsPath:   "lib/ssr/props.go",
 	})
 
-	return &Engine{engine}, err
+	if err != nil {
+		slog.Error("Fail to start ssr engine", "error", err.Error())
+		panic(err)
+	}
+
+	return &Engine{engine}
 }

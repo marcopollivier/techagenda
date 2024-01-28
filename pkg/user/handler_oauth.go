@@ -1,96 +1,145 @@
 package user
 
 import (
-	"context"
 	"fmt"
 	"log/slog"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
+	"github.com/marcopollivier/techagenda/lib/server"
+	"github.com/marcopollivier/techagenda/lib/session"
 	"github.com/markbates/goth"
 	"github.com/markbates/goth/gothic"
+	"github.com/samber/lo"
 )
 
 func (h *UserHandler) AuthLogin(c echo.Context) (err error) {
 	var (
-		ctx         = c.Request().Context()
-		providerRaw = c.Param("provider")
-		authUser    goth.User
-		user        User
+		ctx      = c.Request().Context()
+		res      = c.Response()
+		req      = c.Request()
+		authUser goth.User
+		userData User
+		token    string
 	)
 
-	if _, err = ParseProvider(providerRaw); err != nil {
-		slog.ErrorContext(ctx, err.Error())
-		return c.JSON(404, nil)
+	if _, ok := c.Request().Context().Value(MiddlewareUserKey).(User); ok {
+		res.Header().Set("Location", getReferer(req))
+		res.WriteHeader(http.StatusTemporaryRedirect)
+		return
 	}
-	ctx = context.WithValue(ctx, "provider", providerRaw)
-	c.SetRequest(c.Request().WithContext(ctx))
-
-	if authUser, err = gothic.CompleteUserAuth(c.Response(), c.Request()); err != nil {
+	if authUser, err = gothic.CompleteUserAuth(res, req); err != nil {
 		slog.ErrorContext(ctx, "Fail to complete user auth", "error", err.Error())
 		gothic.BeginAuthHandler(c.Response(), c.Request())
 		return nil
 	}
-	if user, err = h.service.Auth(ctx, authUser); err != nil {
+	if userData, err = h.service.Auth(ctx, authUser); err != nil {
 		slog.ErrorContext(ctx, "Fail to get user information from database", "error", err.Error())
 		return c.JSON(500, map[string]any{
 			"error": err.Error(),
 		})
 	}
+	if token, err = session.GenerateJWT(userData.ID, authUser); err != nil {
+		slog.ErrorContext(ctx, "Fail to generate JWT session", "error", err.Error())
+		fmt.Fprintln(res, err)
+		return
+	}
+	if err = server.StoreInSession(token, req, res); err != nil {
+		slog.ErrorContext(ctx, "Fail to save session on session manager", "error", err.Error())
+		fmt.Fprintln(res, err)
+		return
+	}
 
-	return c.JSON(200, user)
+	res.Header().Set("Location", getReferer(req))
+	res.WriteHeader(http.StatusTemporaryRedirect)
+	return
 }
 
 func (h *UserHandler) AuthLogout(c echo.Context) (err error) {
 	var (
-		ctx         = c.Request().Context()
-		res         = c.Response()
-		req         = c.Request()
-		providerRaw = c.Param("provider")
+		res = c.Response()
+		req = c.Request()
 	)
-	if _, err = ParseProvider(providerRaw); err != nil {
-		slog.ErrorContext(ctx, err.Error())
-		return c.JSON(404, nil)
-	}
-	ctx = context.WithValue(ctx, "provider", providerRaw)
-	c.SetRequest(c.Request().WithContext(ctx))
-
 	if err = gothic.Logout(res, req); err != nil {
-		slog.Error("Fail to execute logout", "error", err.Error())
+		slog.Error("Fail to execute oauth logout", "error", err.Error())
 		return
 	}
-	res.Header().Set("Location", "/")
+	if err = server.Logout(res, req); err != nil {
+		slog.Error("Fail to execute session logout", "error", err.Error())
+		return
+	}
+	res.Header().Set("Location", getReferer(req))
 	res.WriteHeader(http.StatusTemporaryRedirect)
 	return
 }
 
 func (h *UserHandler) AuthCallback(c echo.Context) (err error) {
 	var (
-		ctx         = c.Request().Context()
-		res         = c.Response()
-		req         = c.Request()
-		providerRaw = c.Param("provider")
-		authUser    goth.User
-		user        User
+		ctx      = c.Request().Context()
+		res      = c.Response()
+		req      = c.Request()
+		authUser goth.User
+		userData User
+		token    string
+		provider string
 	)
-	if _, err = ParseProvider(providerRaw); err != nil {
-		slog.ErrorContext(ctx, err.Error())
-		return c.JSON(404, nil)
-	}
-	ctx = context.WithValue(ctx, "provider", providerRaw)
-	c.SetRequest(c.Request().WithContext(ctx))
 
+	if _, ok := c.Request().Context().Value(MiddlewareUserKey).(User); ok {
+		res.Header().Set("Location", getReferer(req))
+		res.WriteHeader(http.StatusTemporaryRedirect)
+		return
+	}
+	if provider, err = gothic.GetProviderName(req); err != nil {
+		slog.ErrorContext(ctx, "Fail to complete user auth", "error", err.Error())
+		fmt.Fprintln(res, err)
+		return
+	}
+	if _, err = ParseProvider(provider); err != nil {
+		slog.ErrorContext(ctx, fmt.Sprintf("Unexpected provider %s", provider), "error", err.Error())
+		fmt.Fprintln(res, err)
+		return
+	}
 	if authUser, err = gothic.CompleteUserAuth(res, req); err != nil {
 		slog.ErrorContext(ctx, "Fail to complete user auth", "error", err.Error())
 		fmt.Fprintln(res, err)
 		return
 	}
-	if user, err = h.service.Auth(ctx, authUser); err != nil {
+	if userData, err = h.service.Auth(ctx, authUser); err != nil {
 		slog.ErrorContext(ctx, "Fail to get user information from database", "error", err.Error())
 		return c.JSON(500, map[string]any{
 			"error": err.Error(),
 		})
 	}
+	if token, err = session.GenerateJWT(userData.ID, authUser); err != nil {
+		slog.ErrorContext(ctx, "Fail to generate JWT session", "error", err.Error())
+		fmt.Fprintln(res, err)
+		return
+	}
+	if err = server.StoreInSession(token, req, res); err != nil {
+		slog.ErrorContext(ctx, "Fail to save session on session manager", "error", err.Error())
+		fmt.Fprintln(res, err)
+		return
+	}
+	res.Header().Set("Location", getReferer(req))
+	res.WriteHeader(http.StatusTemporaryRedirect)
+	return nil
+}
 
-	return c.JSON(200, user)
+func CheckCurrentSession(res http.ResponseWriter, req *http.Request) (us session.UserSession, err error) {
+	var token string
+	if token, err = server.GetFromSession(req); err != nil {
+		return us, err
+	}
+	if us, err = session.UnmarshalSession(token); err != nil {
+		return us, err
+	}
+	return
+}
+
+func getReferer(req *http.Request) string {
+	referer := req.Header.Get("Referer-c")
+	if lo.IsEmpty(referer) {
+		referer = "/v2"
+	}
+	return referer
 }

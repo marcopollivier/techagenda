@@ -18,7 +18,7 @@ func registerProviders() {
 		github.New(
 			cfg.Providers.Github.Key,
 			cfg.Providers.Github.Secret,
-			fmt.Sprintf("%s/auth/github/callback", cfg.AppHost),
+			fmt.Sprintf("%s/auth/callback?provider=github", cfg.AppHost),
 			"user",
 		),
 	)

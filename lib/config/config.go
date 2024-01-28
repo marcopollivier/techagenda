@@ -8,4 +8,5 @@ type Config struct {
 	LogFormat   string    `env:"LOG_FORMAT" envDefault:"text"`
 	DB          Database  `envPrefix:"DATABASE_"`
 	Providers   Providers `envPrefix:"PROVIDER_"`
+	JWT         JWT       `envPrefix:"JWT_"`
 }

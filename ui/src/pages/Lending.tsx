@@ -5,17 +5,18 @@ import Footer from "../components/Footer";
 import MapBanner from "../components/MapBanner";
 import AdBanner from "../components/AdBanner";
 import EventList from "../components/EventList";
-import { Props } from "../props/lending.generated";
+import { Props } from "../props/generated";
 
-function Lending({ Events }: Props) {
+function Lending({ Events, User }: Props) {
 
-    const [events, _] = useState(Events);
+    const [events, setEvents] = useState(Events);
+    const [user, setUser] = useState(User);
 
     console.log(events)
 
     return (
         <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
-            <Header />
+            <Header user={user} currentPage="main" />
             <EventList events={events} />
             <MapBanner />
             <AdBanner />
