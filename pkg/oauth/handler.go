@@ -1,4 +1,4 @@
-package user
+package oauth
 
 import (
 	"fmt"
@@ -8,22 +8,31 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/marcopollivier/techagenda/lib/server"
 	"github.com/marcopollivier/techagenda/lib/session"
+	"github.com/marcopollivier/techagenda/pkg/user"
 	"github.com/markbates/goth"
 	"github.com/markbates/goth/gothic"
 	"github.com/samber/lo"
 )
 
-func (h *UserHandler) AuthLogin(c echo.Context) (err error) {
+type OAuthHandler struct {
+	service Service
+}
+
+func NewOAuthHandler(service Service) *OAuthHandler {
+	return &OAuthHandler{service: service}
+}
+
+func (h *OAuthHandler) AuthLogin(c echo.Context) (err error) {
 	var (
 		ctx      = c.Request().Context()
 		res      = c.Response()
 		req      = c.Request()
 		authUser goth.User
-		userData User
+		userData user.User
 		token    string
 	)
 
-	if _, ok := c.Request().Context().Value(MiddlewareUserKey).(User); ok {
+	if _, ok := c.Request().Context().Value(MiddlewareUserKey).(user.User); ok {
 		res.Header().Set("Location", getReferer(req))
 		res.WriteHeader(http.StatusTemporaryRedirect)
 		return
@@ -55,7 +64,7 @@ func (h *UserHandler) AuthLogin(c echo.Context) (err error) {
 	return
 }
 
-func (h *UserHandler) AuthLogout(c echo.Context) (err error) {
+func (h *OAuthHandler) AuthLogout(c echo.Context) (err error) {
 	var (
 		res = c.Response()
 		req = c.Request()
@@ -73,18 +82,18 @@ func (h *UserHandler) AuthLogout(c echo.Context) (err error) {
 	return
 }
 
-func (h *UserHandler) AuthCallback(c echo.Context) (err error) {
+func (h *OAuthHandler) AuthCallback(c echo.Context) (err error) {
 	var (
 		ctx      = c.Request().Context()
 		res      = c.Response()
 		req      = c.Request()
 		authUser goth.User
-		userData User
+		userData user.User
 		token    string
 		provider string
 	)
 
-	if _, ok := c.Request().Context().Value(MiddlewareUserKey).(User); ok {
+	if _, ok := c.Request().Context().Value(MiddlewareUserKey).(user.User); ok {
 		res.Header().Set("Location", getReferer(req))
 		res.WriteHeader(http.StatusTemporaryRedirect)
 		return

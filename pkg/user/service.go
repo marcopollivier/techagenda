@@ -5,14 +5,15 @@ import (
 	"fmt"
 	"log/slog"
 
-	"github.com/markbates/goth"
 	"gorm.io/gorm"
 )
 
 type Service interface {
-	Auth(ctx context.Context, oauthUser goth.User) (user User, err error)
+	Create(ctx context.Context, u User) (user User, err error)
 	Get(ctx context.Context, userID uint) (user User, err error)
+	GetByEmail(ctx context.Context, email string) (user User, err error)
 	ListAll(ctx context.Context, role Role) (users []User, err error)
+	UpdateAvatar(ctx context.Context, userID uint, newAvatarHref string) (user User, err error)
 }
 
 type UserService struct {
@@ -25,71 +26,12 @@ func NewUserService(db *gorm.DB) Service {
 	}
 }
 
-func (s *UserService) Auth(ctx context.Context, oauthUser goth.User) (user User, err error) {
-	var oauth OAuth
-	if err = s.db.WithContext(ctx).
-		Where("provider = ?", oauthUser.Provider).
-		Where("identifier = ?", oauthUser.UserID).
-		First(&oauth).Error; err != nil && err != gorm.ErrRecordNotFound {
-		slog.ErrorContext(ctx, "Unexpected error searching for oauth link", "provider", oauthUser.Provider, "error", err.Error())
-		return user, err
+func (s *UserService) Create(ctx context.Context, u User) (user User, err error) {
+	if err = s.db.WithContext(ctx).Create(&u).Error; err != nil {
+		slog.ErrorContext(ctx, "Fail to create new user", "error", err.Error(), "user", u)
+		return u, err
 	}
-
-	// If the provider and id does not match to any one already on the database, we need to link with an user if the email already exists, if not we need to create a new user and link it.
-	if err == gorm.ErrRecordNotFound {
-		var provider Provider
-		slog.WarnContext(ctx, fmt.Sprintf("We didn't found a oauth link for email %s and provider %s", oauthUser.Email, oauthUser.Provider))
-		if err = s.db.WithContext(ctx).Where("email = ?", oauthUser.Email).First(&user).Error; err != nil {
-			if err != gorm.ErrRecordNotFound {
-				slog.ErrorContext(ctx, "Unexpected error searching for user", "error", err.Error())
-				return user, err
-			}
-
-			slog.WarnContext(ctx, "No user found to this oauth link, creating a new one")
-			user = User{
-				Email:  oauthUser.Email,
-				Name:   oauthUser.Name,
-				Avatar: oauthUser.AvatarURL,
-				Bio:    oauthUser.Description,
-			}
-			if err = s.db.WithContext(ctx).Create(&user).Error; err != nil {
-				slog.ErrorContext(ctx, "Fail to create new user", "error", err.Error())
-				return user, err
-			}
-		}
-
-		if provider, err = ParseProvider(oauthUser.Provider); err != nil {
-			slog.ErrorContext(ctx, fmt.Sprintf("Unexpected provider %s", oauthUser.Provider), "error", err.Error())
-			return user, err
-		}
-
-		slog.InfoContext(ctx, fmt.Sprintf("Linking user %d to oauth provider %s of identifier %s", user.ID, oauthUser.Provider, oauthUser.UserID))
-		oauth = OAuth{
-			UserID:     user.ID,
-			Provider:   provider,
-			Identifier: oauthUser.UserID,
-		}
-		if err = s.db.WithContext(ctx).Create(&oauth).Error; err != nil {
-			slog.ErrorContext(ctx, "Fail to create link of oauth user", "user", user.ID, "error", err.Error())
-			return user, err
-		}
-		return user, err
-	}
-
-	// If oauth is linked with a user just return the user
-	if user, err = s.Get(ctx, oauth.UserID); err != nil {
-		return
-	}
-
-	go func() {
-		if user.Avatar != oauthUser.AvatarURL {
-			user.Avatar = oauthUser.AvatarURL
-			if errI := s.db.Where("id = ?", user.ID).Updates(&user).Error; errI != nil {
-				slog.ErrorContext(ctx, "Unable to update users avatar!", "user", user.ID, "error", errI.Error())
-			}
-		}
-	}()
-	return
+	return u, err
 }
 
 func (s *UserService) Get(ctx context.Context, userID uint) (user User, err error) {
@@ -99,9 +41,27 @@ func (s *UserService) Get(ctx context.Context, userID uint) (user User, err erro
 	return user, err
 }
 
+func (s *UserService) GetByEmail(ctx context.Context, email string) (user User, err error) {
+	if err = s.db.WithContext(ctx).Where("email = ?", email).First(&user).Error; err != nil {
+		slog.ErrorContext(ctx, "Unable to find user!", "email", email, "error", err.Error())
+	}
+	return user, err
+}
+
 func (s *UserService) ListAll(ctx context.Context, role Role) (users []User, err error) {
 	if err = s.db.WithContext(ctx).Model(new(User)).Where("role = ?", role.String()).Scan(&users).Error; err != nil {
 		slog.ErrorContext(ctx, fmt.Sprintf("Fail to list users of role %s", role), "error", err.Error())
 	}
 	return users, err
+}
+
+func (s *UserService) UpdateAvatar(ctx context.Context, userID uint, newAvatarHref string) (user User, err error) {
+	if err = s.db.WithContext(ctx).Where("id = ?", userID).First(&user).Error; err != nil {
+		slog.ErrorContext(ctx, "Unable to find user!", "user", userID, "error", err.Error())
+	}
+	user.Avatar = newAvatarHref
+	if errI := s.db.WithContext(ctx).Where("id = ?", user.ID).Updates(&user).Error; errI != nil {
+		slog.ErrorContext(ctx, "Unable to update users avatar!", "user", user.ID, "error", errI.Error())
+	}
+	return user, err
 }

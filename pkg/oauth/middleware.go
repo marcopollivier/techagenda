@@ -1,4 +1,4 @@
-package user
+package oauth
 
 import (
 	"context"
@@ -6,6 +6,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/marcopollivier/techagenda/lib/session"
+	"github.com/marcopollivier/techagenda/pkg/user"
 )
 
 type MiddlewareCtxKey string
@@ -19,7 +20,7 @@ func AuthMiddleware(service Service) echo.MiddlewareFunc {
 		return func(c echo.Context) (err error) {
 			var (
 				ctx         = c.Request().Context()
-				user        User
+				user        user.User
 				req         = c.Request()
 				res         = c.Response()
 				userSession session.UserSession
@@ -38,9 +39,9 @@ func AuthMiddleware(service Service) echo.MiddlewareFunc {
 	}
 }
 
-func GetUserFromCtx(ctx context.Context) *User {
-	var userPtr *User
-	if userData, ok := ctx.Value(MiddlewareUserKey).(User); ok {
+func GetUserFromCtx(ctx context.Context) *user.User {
+	var userPtr *user.User
+	if userData, ok := ctx.Value(MiddlewareUserKey).(user.User); ok {
 		userPtr = &userData
 	}
 	return userPtr

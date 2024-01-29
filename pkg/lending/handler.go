@@ -9,7 +9,7 @@ import (
 
 	"github.com/marcopollivier/techagenda/lib/ssr"
 	"github.com/marcopollivier/techagenda/pkg/event"
-	"github.com/marcopollivier/techagenda/pkg/user"
+	"github.com/marcopollivier/techagenda/pkg/oauth"
 )
 
 type QueryParams struct {
@@ -45,7 +45,7 @@ func NewLendingHandler(server *echo.Echo, eventService event.Service, engine *ss
 			},
 			Props: &ssr.Props{
 				Events: events,
-				User:   user.GetUserFromCtx(ctx),
+				User:   oauth.GetUserFromCtx(ctx),
 			},
 		})
 		return c.HTML(http.StatusOK, string(page))
