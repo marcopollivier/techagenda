@@ -39,7 +39,14 @@ func (e *EventService) Get(
 		limit = 50
 	}
 	now := time.Now()
-	base := e.db.Joins("User").
+	base := e.db.
+		Select("events.*, array_agg(tags.tag) as tags, array_agg(venues.*) as venues").
+		Group("events.id, events.title, events.banner, events.description, events.href, events.type_of, events.begin_date, events.end_date, events.user_id, events.created_at, events.updated_at, events.deleted_at, \"User\".id").
+		Joins("User").
+		Joins("JOIN events_tags ON events_tags.event_id = events.id").
+		Joins("JOIN tags ON tags.id = events_tags.tag_id").
+		Joins("JOIN events_venues ON events_venues.event_id = events.id").
+		Joins("JOIN venues ON venues.id = events_venues.venue_id").
 		Preload("Attendees").
 		Preload("Tags", func(db *gorm.DB) *gorm.DB {
 			if len(tags) > 0 {
@@ -58,6 +65,12 @@ func (e *EventService) Get(
 
 	if lo.IsNotEmpty(name) {
 		base.Where("name like ?", name)
+	}
+	if lo.IsNotEmpty(city) {
+		base.Where("venues.city = ?", city)
+	}
+	if len(tags) > 0 {
+		base.Where("tags.tag in ?", tags)
 	}
 	if len(typeOf) > 0 {
 		base.Where("? in ANY(typeOf)", typeOf)
