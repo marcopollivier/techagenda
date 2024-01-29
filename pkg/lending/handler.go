@@ -1,6 +1,7 @@
 package lending
 
 import (
+	"log/slog"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -11,15 +12,29 @@ import (
 	"github.com/marcopollivier/techagenda/pkg/user"
 )
 
+type QueryParams struct {
+	Name      string              `query:"name"`
+	City      string              `query:"city"`
+	Tags      []string            `query:"tags"`
+	TypeOf    []event.EventTypeOf `query:"type_of"`
+	Available bool                `query:"available"`
+	Page      int                 `query:"page"`
+	Limit     int                 `query:"limit"`
+}
+
 func NewLendingHandler(server *echo.Echo, eventService event.Service, engine *ssr.Engine) {
 	server.Static("/assets", "./ui/public/")
 
 	server.GET("/v2", func(c echo.Context) (err error) {
-		var userPtr *user.User
-		events, _ := eventService.Get(c.Request().Context(), "", "", []string{}, []event.EventTypeOf{}, false, 0, 50)
-		if userData, ok := c.Request().Context().Value(user.MiddlewareUserKey).(user.User); ok {
-			userPtr = &userData
+		var (
+			ctx = c.Request().Context()
+			qp  QueryParams
+		)
+		if err = c.Bind(&qp); err != nil {
+			slog.ErrorContext(ctx, "Error parsing query params", "error", err.Error())
 		}
+
+		events, _ := eventService.Get(ctx, qp.Name, qp.City, qp.Tags, qp.TypeOf, qp.Available, qp.Page, qp.Limit)
 
 		page := engine.RenderRoute(gossr.RenderConfig{
 			File:  "pages/Lending.tsx",
@@ -30,7 +45,7 @@ func NewLendingHandler(server *echo.Echo, eventService event.Service, engine *ss
 			},
 			Props: &ssr.Props{
 				Events: events,
-				User:   userPtr,
+				User:   user.GetUserFromCtx(ctx),
 			},
 		})
 		return c.HTML(http.StatusOK, string(page))

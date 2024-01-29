@@ -37,3 +37,11 @@ func AuthMiddleware(service Service) echo.MiddlewareFunc {
 		}
 	}
 }
+
+func GetUserFromCtx(ctx context.Context) *User {
+	var userPtr *User
+	if userData, ok := ctx.Value(MiddlewareUserKey).(User); ok {
+		userPtr = &userData
+	}
+	return userPtr
+}
