@@ -49,7 +49,7 @@ func (e *EventService) Get(
 		}).
 		Preload("Venues", func(db *gorm.DB) *gorm.DB {
 			if lo.IsNotEmpty(city) {
-				return db.Where("city in ?", city)
+				return db.Where("city = ?", city)
 			}
 			return db
 		}).
