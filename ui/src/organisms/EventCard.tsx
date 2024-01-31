@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { UserGroupIcon } from '@heroicons/react/20/solid';
-import { Event } from '../props/lending.generated';
+import { Event } from '../props/generated';
 import EventModal from './EventModal';
 import Moment from 'moment';
 
