@@ -6,6 +6,7 @@ import (
 	"github.com/lib/pq"
 	"github.com/marcopollivier/techagenda/pkg/attendee"
 	"github.com/marcopollivier/techagenda/pkg/cfp"
+	"github.com/marcopollivier/techagenda/pkg/tag"
 	"github.com/marcopollivier/techagenda/pkg/user"
 	"github.com/marcopollivier/techagenda/pkg/venue"
 	"gorm.io/gorm"
@@ -25,15 +26,10 @@ type Event struct {
 	UserID      uint           `json:"user_id"`
 
 	Attendees []attendee.Attendee `json:"attendees"`
-	Tags      []Tags              `json:"tags" gorm:"many2many:events_tags"`
+	Tags      []tag.Tag           `json:"tags" gorm:"many2many:events_tags"`
 	Venues    []venue.Venue       `json:"venues" gorm:"many2many:events_venues"`
 	Cfp       cfp.Cfp             `json:"cfp"`
 	User      user.User           `json:"user"`
-}
-
-type Tags struct {
-	gorm.Model
-	Tag string `json:"tag"`
 }
 
 // ENUM(online, in_person)

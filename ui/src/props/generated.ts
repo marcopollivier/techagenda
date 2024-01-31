@@ -22,7 +22,7 @@ export interface Venue {
     lat: string;
     long: string;
 }
-export interface Tags {
+export interface Tag {
     ID: number;
     CreatedAt: Time;
     UpdatedAt: Time;
@@ -55,7 +55,7 @@ export interface Event {
     end: Time;
     user_id: number;
     attendees: Attendee[];
-    tags: Tags[];
+    tags: Tag[];
     venues: Venue[];
     cfp: Cfp;
     user: User;
@@ -79,7 +79,10 @@ export interface User {
     Avatar: string;
 }
 export interface Props {
+    MainTag: string;
     User: User;
     Event: Event;
     Events: Event[];
+    Tags: string[];
+    Cities: string[];
 }

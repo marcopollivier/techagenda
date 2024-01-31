@@ -1,26 +1,28 @@
 import { Disclosure } from '@headlessui/react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import TechAgendaLogo from '../../public/logo.svg';
-import { AdjustmentsHorizontalIcon } from '@heroicons/react/20/solid';
 import LoginButton from '../organisms/LoginButton';
 import { User } from "../props/generated";
 import classNames from '../helper/classNames';
+import FilterButton from '../organisms/FilterButton';
 
 const navigation = [
-    { name: 'Todos os eventos', href: '#', slug: "main" },
-    { name: 'Design', href: '#', slug: "design" },
-    { name: 'Product', href: '#', slug: "product" },
-    { name: 'DevOps', href: '#', slug: "devops" },
-    { name: 'Software', href: '#', slug: "software" },
-    { name: 'Management', href: '#', slug: "management" },
+    { name: 'Todos os eventos', tag: "" },
+    { name: 'Design', tag: "design" },
+    { name: 'Product', tag: "product" },
+    { name: 'DevOps', tag: "devops" },
+    { name: 'Software', tag: "software" },
+    { name: 'Management', tag: "management" },
 ]
 
 interface HeaderProps {
     user: User
     currentPage: string
+    tags: string[]
+    cities: string[]
 }
 
-export default function Header({ user, currentPage }: HeaderProps) {
+export default function Header({ user, currentPage, tags, cities }: HeaderProps) {
     return (
         <Disclosure as="nav" className="pt-8 pb-6">
             {({ open }) => (
@@ -55,12 +57,12 @@ export default function Header({ user, currentPage }: HeaderProps) {
                                             {navigation.map((item) => (
                                                 <a
                                                     key={item.name}
-                                                    href={item.href}
+                                                    href={item.tag === "" ? "/v2" : `/v2?tags=${item.tag}`}
                                                     className={classNames(
-                                                        item.slug === currentPage ? 'bg-white text-black shadow-md' : 'text-gray-400 hover:bg-gray-200 hover:text-black',
+                                                        item.tag === currentPage ? 'bg-white text-black shadow-md' : 'text-gray-400 hover:bg-gray-200 hover:text-black',
                                                         'rounded-full px-3 py-1 text-sm font-medium'
                                                     )}
-                                                    aria-current={item.slug === currentPage ? 'page' : undefined}
+                                                    aria-current={item.tag === currentPage ? 'page' : undefined}
                                                 >
                                                     {item.name}
                                                 </a>
@@ -71,15 +73,7 @@ export default function Header({ user, currentPage }: HeaderProps) {
 
                             </div>
                             {/* Filters menu item */}
-                            <div className="relative flex items-center justify-between">
-                                <button
-                                    type="button"
-                                    className="inline-flex items-center rounded-full bg-gray-100 px-3 py-2 text-sm font-medium text-black shadow-sm hover:bg-blue-500 hover:text-white shadow-lg ring-1 ring-black ring-opacity-5"
-                                >
-                                    <AdjustmentsHorizontalIcon className="-ml-0.5 mr-1.5 h-5 w-5" aria-hidden="true" />
-                                    Filtros
-                                </button>
-                            </div>
+                            <FilterButton tags={tags} cities={cities} />
                         </div>
                     </div>
                 </>

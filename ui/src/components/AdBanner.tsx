@@ -4,7 +4,7 @@ import TechBro from '../../public/tech_bro.png'
 export default function AdBanner() {
     return (
         <div className="relative bg-white">
-            <div className="relative isolate overflow-hidden bg-blue-500 shadow-2xl sm:rounded-3xl lg:flex h-auto">
+            <div className="relative isolate overflow-hidden bg-blue-500 shadow-2xl rounded-3xl lg:flex h-1/6">
                 <div className="ml-6 max-w-md text-center lg:flex-auto lg:py-32 lg:text-left">
                     <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
                         Crie, promova e busque por eventos de Tecnologia facilmente.

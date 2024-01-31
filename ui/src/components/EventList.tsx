@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Event } from '../props/lending.generated';
+import { Event } from '../props/generated';
 import EventCard from '../organisms/EventCard';
 
 interface EventListProps {

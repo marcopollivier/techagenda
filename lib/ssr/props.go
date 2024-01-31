@@ -6,7 +6,10 @@ import (
 )
 
 type Props struct {
-	User   *user.User
-	Event  *event.Event
-	Events []event.Event
+	MainTag string
+	User    *user.User
+	Event   *event.Event
+	Events  []event.Event
+	Tags    []string
+	Cities  []string
 }

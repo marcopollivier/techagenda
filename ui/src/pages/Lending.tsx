@@ -7,7 +7,7 @@ import AdBanner from "../components/AdBanner";
 import EventList from "../components/EventList";
 import { Props } from "../props/generated";
 
-function Lending({ Events, User }: Props) {
+function Lending({ Events, User, MainTag, Tags, Cities }: Props) {
 
     const [events, setEvents] = useState(Events);
     const [user, setUser] = useState(User);
@@ -16,7 +16,7 @@ function Lending({ Events, User }: Props) {
 
     return (
         <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
-            <Header user={user} currentPage="main" />
+            <Header user={user} currentPage={MainTag} tags={Tags} cities={Cities} />
             <EventList events={events} />
             <MapBanner />
             <AdBanner />

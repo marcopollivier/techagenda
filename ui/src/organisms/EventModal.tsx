@@ -37,14 +37,14 @@ export default function EventModal({ event, openDetails, onClose }: EventModalPo
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all w-2/4">
+              <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all w-full">
                 <div className="absolute flex right-0 items-center overflow-hidden pb-8 pt-14 sm:px-6 sm:pt-8 md:p-6">
                   <button
                     type="button"
                     className="static focus:outline-none"
                     onClick={onClose}
                   >
-                    <XMarkIcon className="h-10 w-10 px-2 py-2 rounded-full bg-white/10 text-white hover:text-gray-300" aria-hidden="true" />
+                    <XMarkIcon className="h-10 w-10 px-2 py-2 rounded-full stroke-2 bg-black/10 text-white hover:text-gray-100" aria-hidden="true" />
                   </button>
                 </div>
                 <div className="static h-80 w-full overflow-hidden bg-gray-200 object-cover">

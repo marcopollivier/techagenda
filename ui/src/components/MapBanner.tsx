@@ -9,7 +9,7 @@ export default function MapBanner() {
                 </div>
                 <div className="mt-6">
                     <a href="#"
-                        className="inline-block rounded-full border border-transparent bg-blue-500 px-8 py-3 text-center font-medium text-white hover:bg-blue-700"
+                        className="inline-block rounded-full border border-transparent bg-blue-500 px-8 py-3 text-center font-medium text-white hover:opacity-90"
                     >
                         Mostrar mais
                     </a>
