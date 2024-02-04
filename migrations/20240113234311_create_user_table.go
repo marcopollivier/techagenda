@@ -27,10 +27,10 @@ func upCreateUsersTable(ctx context.Context, tx *sql.Tx) error {
 			created_at TIMESTAMP DEFAULT now(),
 			updated_at TIMESTAMP DEFAULT now(),
 			deleted_at TIMESTAMP,
-		
+
 			UNIQUE(email)
 		);
-		
+
 		CREATE INDEX idx_users_role on users (role);
 	`); err != nil {
 		return err
@@ -39,16 +39,16 @@ func upCreateUsersTable(ctx context.Context, tx *sql.Tx) error {
 	// OAuth table
 	if _, err := tx.ExecContext(ctx, `
 		CREATE TYPE provider AS ENUM ('github');
-		
+
 		CREATE TABLE IF NOT EXISTS oauths (
 			id         BIGSERIAL PRIMARY KEY,
-			user_id	   BIGINT NOT NULL,
+			user_id	   BIGINT NOT NULL REFERENCES users(id),
 			provider   PROVIDER NOT NULL,
 			identifier TEXT NOT NULL,
 			created_at TIMESTAMP DEFAULT now(),
 			updated_at TIMESTAMP DEFAULT now(),
 			deleted_at TIMESTAMP,
-			
+
 			CONSTRAINT fk_oauths_user_id FOREIGN KEY (user_id) REFERENCES users(id),
 			UNIQUE(user_id, provider, identifier)
 		);

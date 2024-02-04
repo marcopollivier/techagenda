@@ -7,4 +7,5 @@ type Database struct {
 	User    string `env:"USER" envDefault:"postgres"`
 	Pass    string `env:"PASSWORD,unset"`
 	SSLMode string `env:"SSL_MODE" envDefault:"disable"`
+	URL     string `env:"URL"`
 }

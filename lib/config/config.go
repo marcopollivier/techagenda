@@ -6,6 +6,7 @@ type Config struct {
 	Environment string    `env:"ENVIRONMENT" envDefault:"unknown"`
 	LogLevel    string    `env:"LOG_LEVEL" envDefault:"debug"`
 	LogFormat   string    `env:"LOG_FORMAT" envDefault:"text"`
-	DB          Database  `envPrefix:"DB_"`
+	DB          Database  `envPrefix:"DATABASE_"`
 	Providers   Providers `envPrefix:"PROVIDER_"`
+	JWT         JWT       `envPrefix:"JWT_"`
 }

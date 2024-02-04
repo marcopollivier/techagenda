@@ -16,6 +16,12 @@ install-deps:
 run:
 	@go run main.go
 
+key-gen:
+	@go run main.go key-gen
+
+new-migration:
+	@go run main.go migrator create $(migration) go
+
 migrate-status:
 	@go run main.go migrator status
 

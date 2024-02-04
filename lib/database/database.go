@@ -28,6 +28,11 @@ func NewDB() *gorm.DB {
 }
 
 func BuildDSN(cfg config.Config) string {
+	if lo.IsNotEmpty(cfg.DB.URL) {
+		slog.Info("Connecting with DB URL")
+		return cfg.DB.URL
+	}
+	slog.Info("Connecting with DB config")
 	baseDSN := fmt.Sprintf("host=%s port=%d dbname=%s user=%s sslmode=%s TimeZone=UTC", cfg.DB.Host, cfg.DB.Port, cfg.DB.Name, cfg.DB.User, cfg.DB.SSLMode)
 	if lo.IsNotEmpty(cfg.DB.Pass) {
 		baseDSN += fmt.Sprintf(" password=%s", cfg.DB.Pass)
