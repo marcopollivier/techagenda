@@ -15,7 +15,6 @@ import (
 	"github.com/marcopollivier/techagenda/pkg/event"
 	"github.com/marcopollivier/techagenda/pkg/lending"
 	"github.com/marcopollivier/techagenda/pkg/oauth"
-	"github.com/marcopollivier/techagenda/pkg/static"
 	"github.com/marcopollivier/techagenda/pkg/tag"
 	"github.com/marcopollivier/techagenda/pkg/user"
 	"github.com/marcopollivier/techagenda/pkg/venue"
@@ -38,7 +37,6 @@ var rootCmd = &cobra.Command{
 			venue.Module(),
 
 			lending.Module(),
-			static.Module(),
 		).Run()
 	},
 }

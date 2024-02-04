@@ -20,7 +20,7 @@ func NewLendingHandler(server *echo.Echo, eventService event.Service, tagService
 	server.Static("/assets", "./ui/public/")
 	server.Static("/favicon.ico", "./ui/public/favicon.ico")
 
-	server.GET("/v2", func(c echo.Context) (err error) {
+	server.GET("/", func(c echo.Context) (err error) {
 		var (
 			ctx         = c.Request().Context()
 			qp          event.QueryParams

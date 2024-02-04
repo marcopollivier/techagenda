@@ -148,7 +148,7 @@ func CheckCurrentSession(res http.ResponseWriter, req *http.Request) (us session
 func getReferer(req *http.Request) string {
 	referer := req.Header.Get("Referer-c")
 	if lo.IsEmpty(referer) {
-		referer = "/v2"
+		referer = "/"
 	}
 	return referer
 }
