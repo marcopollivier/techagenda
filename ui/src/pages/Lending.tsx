@@ -24,18 +24,23 @@ export default function Lending({ Events, User, MainTag, Tags, Cities }: Props) 
     });
 
     const onFilterChange = async (f: Filters) => {
-        setLoading(true)
+        setLoading(true);
         setFilters(f);
+        setEvents([]);
         const e = await requestEvents(0, f);
-        setLoading(false)
+        setLoading(false);
         setPage(0);
         setEvents(e);
     }
 
     const onRequestNewPage = async () => {
+        setLoading(true);
         const e = await requestEvents(page + 1, filters);
-        setPage(page + 1);
-        setEvents(events.concat(e));
+        if (e.length > 0) {
+            setPage(page + 1);
+            setEvents(events.concat(e));
+        }
+        setLoading(false);
     }
 
     return (
@@ -43,7 +48,7 @@ export default function Lending({ Events, User, MainTag, Tags, Cities }: Props) 
             <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
                 <Header user={User} currentPage={MainTag} tags={Tags} cities={Cities} onFilterChange={onFilterChange} />
                 <EventList events={events} loading={loading} />
-                <NextPageBanner onClick={() => onRequestNewPage} />
+                <NextPageBanner onClick={onRequestNewPage} />
                 <AdBanner />
                 <Footer />
             </div>
