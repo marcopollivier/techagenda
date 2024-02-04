@@ -7,10 +7,13 @@ import EventList from "../components/EventList";
 import { Props, Event as EventType } from "../props/generated";
 import { Filters } from '../organisms/FilterButton';
 import axios from 'axios';
+import { PrimeReactProvider } from 'primereact/api';
+import Tailwind from 'primereact/passthrough/tailwind';
 
 export default function Lending({ Events, User, MainTag, Tags, Cities }: Props) {
 
     const [events, setEvents] = useState(Events);
+    const [loading, setLoading] = useState(false);
     const [page, setPage] = useState(0);
     const [filters, setFilters] = useState<Filters>({
         name: "",
@@ -21,8 +24,10 @@ export default function Lending({ Events, User, MainTag, Tags, Cities }: Props) 
     });
 
     const onFilterChange = async (f: Filters) => {
+        setLoading(true)
         setFilters(f);
         const e = await requestEvents(0, f);
+        setLoading(false)
         setPage(0);
         setEvents(e);
     }
@@ -34,13 +39,15 @@ export default function Lending({ Events, User, MainTag, Tags, Cities }: Props) 
     }
 
     return (
-        <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
-            <Header user={User} currentPage={MainTag} tags={Tags} cities={Cities} onFilterChange={onFilterChange} />
-            <EventList events={events} />
-            <NextPageBanner onClick={() => onRequestNewPage} />
-            <AdBanner />
-            <Footer />
-        </div>
+        <PrimeReactProvider value={{ unstyled: true, pt: Tailwind }}>
+            <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
+                <Header user={User} currentPage={MainTag} tags={Tags} cities={Cities} onFilterChange={onFilterChange} />
+                <EventList events={events} loading={loading} />
+                <NextPageBanner onClick={() => onRequestNewPage} />
+                <AdBanner />
+                <Footer />
+            </div>
+        </PrimeReactProvider>
     );
 }
 
