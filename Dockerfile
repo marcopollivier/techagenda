@@ -17,7 +17,6 @@ RUN npm install
 FROM node:16-alpine
 WORKDIR /app
 COPY --from=builder /app/techagenda ./techagenda
-COPY --from=builder /app/public ./public
 COPY --from=frontend /ui ./ui
 CMD ./techagenda
 
