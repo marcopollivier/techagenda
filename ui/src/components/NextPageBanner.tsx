@@ -1,4 +1,9 @@
-export default function MapBanner() {
+
+interface Props {
+    onClick: () => void
+}
+
+export default function NextPageBanner({ onClick }: Props) {
     return (
         <div className="relative overflow-hidden bg-white my-24">
             <div className="grid place-content-center place-items-center">
@@ -9,6 +14,7 @@ export default function MapBanner() {
                 </div>
                 <div className="mt-6">
                     <a href="#"
+                        onClick={onClick}
                         className="inline-block rounded-full border border-transparent bg-blue-500 px-8 py-3 text-center font-medium text-white hover:opacity-90"
                     >
                         Mostrar mais

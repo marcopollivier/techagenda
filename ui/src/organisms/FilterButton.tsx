@@ -1,18 +1,20 @@
-import React, { Fragment, useState } from 'react';
-import { Dialog, Transition, Switch, Listbox, Combobox } from '@headlessui/react';
+import { Fragment, useState } from 'react';
+import { Dialog, Transition, Switch, Listbox, Combobox, RadioGroup } from '@headlessui/react';
 import { AdjustmentsHorizontalIcon } from '@heroicons/react/20/solid';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import TagPicker from '../molecules/TagPicker';
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
 import classNames from '../helper/classNames';
+import ItemSelector, { SelectorOption } from '../molecules/ItemSelector'
 
 
 interface Props {
     tags: string[]
     cities: string[]
+    onChange: (state: Filters) => void
 }
 
-export default function FilterButton({ tags, cities }: Props) {
+export function FilterButton({ tags, cities, onChange }: Props) {
     const [open, setOpen] = useState(false)
 
     return (
@@ -27,7 +29,7 @@ export default function FilterButton({ tags, cities }: Props) {
                     Filtros
                 </button>
             </div>
-            <SideBlock open={open} setOpen={setOpen} tags={tags} cities={cities} />
+            <SideBlock open={open} setOpen={setOpen} tags={tags} cities={cities} onChange={onChange} />
         </>
     )
 }
@@ -37,14 +39,50 @@ interface SideBlockProps {
     setOpen: (state: boolean) => void
     tags: string[]
     cities: string[]
+    onChange: (state: Filters) => void
 }
 
-function SideBlock({ open, setOpen, tags, cities }: SideBlockProps) {
+export interface Filters {
+    name: string
+    city: string
+    available: boolean
+    type_of: string
+    tags: string[]
+}
 
-    const [toggle, setToggle] = useState(false)
-    const [selectedTags, setSelectedTags] = useState<string[]>([])
-    const [eventName, setEventName] = useState('')
-    const [selectedCity, setselectedCity] = useState('Todas')
+type ObjectKey = keyof Filters;
+
+function SideBlock({ open, setOpen, tags, cities, onChange }: SideBlockProps) {
+
+    const cleanFilters: Filters = {
+        name: "",
+        city: "Todas",
+        available: false,
+        type_of: "in_person,online",
+        tags: []
+    }
+
+    const typeOfOptions: SelectorOption[] = [
+        { title: "Tanto faz 🤷🏼", subtitle: "", value: "in_person,online" },
+        { title: "Presencial🧔🏽", subtitle: "", value: "in_person" },
+        { title: "Remoto 👨🏿‍💻", subtitle: "", value: "online" }
+    ]
+
+    const [filters, setFilters] = useState<Filters>(cleanFilters);
+
+    function onFilterUpdate(typeOf: ObjectKey, value: Filters[ObjectKey]): void {
+        let f: Filters = Object.assign({}, filters);
+        f[typeOf] = value as Filters[ObjectKey];
+
+        setFilters(f);
+        onChange(f);
+    }
+
+    function resetFilters(): void {
+        let f: Filters = Object.assign({}, cleanFilters);
+        setFilters(f);
+        onChange(f);
+    }
 
     return (
         <Transition.Root show={open} as={Fragment}>
@@ -108,9 +146,9 @@ function SideBlock({ open, setOpen, tags, cities }: SideBlockProps) {
                                                     Nome do evento
                                                 </label>
                                                 <div className="relative mt-2 ">
-                                                    <Combobox value={eventName} onChange={setEventName}>
+                                                    <Combobox value={filters.name} onChange={(e: string) => onFilterUpdate("name", e)}>
                                                         <Combobox.Input
-                                                            onChange={(event) => setEventName(event.target.value)}
+                                                            onChange={(event) => onFilterUpdate("name", event.target.value)}
                                                             className="relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 sm:text-sm sm:leading-6"
                                                         />
                                                     </Combobox>
@@ -118,58 +156,32 @@ function SideBlock({ open, setOpen, tags, cities }: SideBlockProps) {
                                             </div>
 
                                             <div className="sm:col-span-4 py-2">
-                                                <ListCities cities={cities} selected={selectedCity} setSelected={setselectedCity} />
+                                                <ListCities cities={cities} selected={filters.city} setSelected={(e: string) => onFilterUpdate("city", e)} />
                                             </div>
 
                                             <div className="flex justify-between">
-                                                <div className="py-2 space-y-2">
-                                                    <fieldset>
-                                                        <legend className="text-sm font-semibold leading-6 text-gray-900">Tipo do evento</legend>
-                                                        <div className="mt-2 space-y-2">
-                                                            <div className="relative flex gap-x-1">
-                                                                <div className="flex h-6 items-center">
-                                                                    <input
-                                                                        id="in_person"
-                                                                        name="in_person"
-                                                                        type="checkbox"
-                                                                        className="h-4 w-4 rounded border-gray-300 text-blue-500 focus:ring-blue-500"
-                                                                    />
-                                                                </div>
-                                                                <div className="text-sm leading-6">
-                                                                    <label htmlFor="in_person" className="font-medium text-gray-900">
-                                                                        Presencial
-                                                                    </label>
-                                                                </div>
-                                                            </div>
-                                                            <div className="relative flex gap-x-1">
-                                                                <div className="flex h-6 items-center">
-                                                                    <input
-                                                                        id="online"
-                                                                        name="online"
-                                                                        type="checkbox"
-                                                                        className="h-4 w-4 rounded border-gray-300 text-blue-500 focus:ring-blue-500"
-                                                                    />
-                                                                </div>
-                                                                <div className="text-sm leading-6">
-                                                                    <label htmlFor="online" className="font-medium text-gray-900">
-                                                                        Online
-                                                                    </label>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </fieldset>
+                                                <div className="py-2 space-y-2 w-1/2">
+                                                    <label htmlFor="event_name" className="block text-sm font-medium leading-6 text-gray-900">
+                                                        Tipo do evento
+                                                    </label>
+                                                    <ItemSelector
+                                                        label='Tipo do evento'
+                                                        options={typeOfOptions}
+                                                        selected={filters.type_of}
+                                                        setSelected={(e: string) => onFilterUpdate("type_of", e)}
+                                                    />
                                                 </div>
                                                 <div className="py-2 space-y-2">
                                                     <legend className="block text-sm font-medium leading-6 text-gray-900">Ainda dá pra participar?</legend>
                                                     <Switch
-                                                        checked={toggle}
-                                                        onChange={setToggle}
-                                                        className={`${toggle ? 'bg-blue-600' : 'bg-gray-200'
+                                                        checked={filters.available}
+                                                        onChange={(e: boolean) => onFilterUpdate("available", e)}
+                                                        className={`${filters.available ? 'bg-blue-600' : 'bg-gray-200'
                                                             } relative inline-flex h-6 w-11 items-center rounded-full`}
                                                     >
                                                         <span className="sr-only">Ainda dá pra participar?</span>
                                                         <span
-                                                            className={`${toggle ? 'translate-x-6' : 'translate-x-1'
+                                                            className={`${filters.available ? 'translate-x-6' : 'translate-x-1'
                                                                 } inline-block h-4 w-4 transform rounded-full bg-white transition`}
                                                         />
                                                     </Switch>
@@ -179,13 +191,14 @@ function SideBlock({ open, setOpen, tags, cities }: SideBlockProps) {
                                                 <label htmlFor="tags" className="block text-sm font-medium leading-6 text-gray-900">
                                                     Tags
                                                 </label>
-                                                <TagPicker tags={tags} selectedTags={selectedTags} setSelected={setSelectedTags} />
+                                                <TagPicker tags={tags} selectedTags={filters.tags} setSelected={(e: string[]) => onFilterUpdate("tags", e)} />
                                             </div>
 
                                             <div className="mt-6 flex items-center justify-end gap-x-6">
                                                 <button
                                                     type="submit"
                                                     className="rounded-md bg-blue-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
+                                                    onClick={resetFilters}
                                                 >
                                                     Limpar filtros!
                                                 </button>
@@ -198,7 +211,7 @@ function SideBlock({ open, setOpen, tags, cities }: SideBlockProps) {
                     </div>
                 </div>
             </Dialog>
-        </Transition.Root>
+        </Transition.Root >
     )
 }
 

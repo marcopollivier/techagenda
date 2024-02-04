@@ -3,7 +3,9 @@ package event
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log/slog"
+	"strings"
 	"time"
 
 	"github.com/lib/pq"
@@ -64,7 +66,7 @@ func (e *EventService) Get(
 		Limit(limit)
 
 	if lo.IsNotEmpty(name) {
-		base.Where("name like ?", name)
+		base.Where(fmt.Sprintf("title like '%%%s%%'", name))
 	}
 	if lo.IsNotEmpty(city) {
 		base.Where("venues.city = ?", city)
@@ -73,7 +75,9 @@ func (e *EventService) Get(
 		base.Where("tags.tag in ?", tags)
 	}
 	if len(typeOf) > 0 {
-		base.Where("? in ANY(typeOf)", typeOf)
+		base.Where(fmt.Sprintf("type_of <@ array[%s]", strings.Join(lo.Map(typeOf, func(i EventTypeOf, _ int) string {
+			return fmt.Sprintf("'%s'::eventtypeof", i.String())
+		}), ",")))
 	}
 	if available {
 		base.Where("begin_date <= ?", now).Where("end_date > ?", now)
