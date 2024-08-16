@@ -57,7 +57,7 @@ export default function Header({ user, currentPage, tags, cities, onFilterChange
                                         {navigation.map((item) => (
                                             <a
                                                 key={item.name}
-                                                href={item.tag === "" ? "" : `?tags=${item.tag}`}
+                                                href={item.tag === "" ? "/" : `?tags=${item.tag}`}
                                                 className={classNames(
                                                     item.tag === currentPage ? 'bg-white text-black shadow-md' : 'text-gray-400 hover:bg-gray-200 hover:text-black',
                                                     'rounded-full px-3 py-1 text-sm font-medium'
