@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/lib/pq"
+	"github.com/marcopollivier/techagenda/pkg/cfp"
 	"github.com/marcopollivier/techagenda/pkg/user"
 	"github.com/samber/lo"
 	"gorm.io/gorm"
@@ -16,7 +17,12 @@ import (
 
 type Service interface {
 	Get(ctx context.Context, name, city string, tags []string, typeOf []EventTypeOf, available bool, page, limit int) (events []Event, err error)
-	Create(ctx context.Context, user user.User, event EventDTO, tags []string) (result Event, err error)
+	GetByID(ctx context.Context, id uint) (event Event, err error)
+	GetByCreator(ctx context.Context, userID uint) (events []Event, err error)
+	GetByUserAttendance(ctx context.Context, userID uint) (events []Event, err error)
+	Create(ctx context.Context, user user.User, event EventDTO, tags []string, venueIDs []uint, cfpData *cfp.Cfp) (result Event, err error)
+	Update(ctx context.Context, id uint, event EventDTO, tags []string, venueIDs []uint, cfpData *cfp.Cfp) (result Event, err error)
+	Delete(ctx context.Context, id uint) (err error)
 }
 
 type EventService struct {
@@ -50,6 +56,7 @@ func (e *EventService) Get(
 		Joins("LEFT JOIN events_venues ON events_venues.event_id = events.id").
 		Joins("LEFT JOIN venues ON venues.id = events_venues.venue_id").
 		Preload("Attendees").
+		Preload("Attendees.User").
 		Preload("Tags", func(db *gorm.DB) *gorm.DB {
 			if len(tags) > 0 {
 				return db.Where("tag in ?", tags)
@@ -89,10 +96,68 @@ func (e *EventService) Get(
 	return
 }
 
-func (e *EventService) Create(ctx context.Context, user user.User, event EventDTO, tags []string) (result Event, err error) {
+func (e *EventService) GetByID(ctx context.Context, id uint) (event Event, err error) {
+	if err = e.db.WithContext(ctx).
+		Preload("Tags").
+		Preload("Venues").
+		Preload("Attendees").
+		Preload("Attendees.User").
+		Preload("Cfp").
+		Preload("User").
+		First(&event, id).Error; err != nil {
+		slog.ErrorContext(ctx, "Fail to get event by id", "id", id, "error", err.Error())
+	}
+	return
+}
+
+func (e *EventService) GetByCreator(ctx context.Context, userID uint) (events []Event, err error) {
+	if err = e.db.WithContext(ctx).
+		Where("user_id = ?", userID).
+		Preload("Tags").
+		Preload("Venues").
+		Preload("Attendees").
+		Preload("Attendees.User").
+		Preload("Cfp").
+		Preload("User").
+		Order("begin_date DESC").
+		Find(&events).Error; err != nil {
+		slog.ErrorContext(ctx, "Fail to get events by creator", "user_id", userID, "error", err.Error())
+	}
+	return
+}
+
+func (e *EventService) GetByUserAttendance(ctx context.Context, userID uint) (events []Event, err error) {
+	var eventIDs []uint
+	if err = e.db.WithContext(ctx).
+		Table("attendees").
+		Select("event_id").
+		Where("user_id = ? AND deleted_at IS NULL", userID).
+		Find(&eventIDs).Error; err != nil {
+		slog.ErrorContext(ctx, "Fail to get attended event ids", "user_id", userID, "error", err.Error())
+		return
+	}
+	if len(eventIDs) == 0 {
+		return
+	}
+	if err = e.db.WithContext(ctx).
+		Preload("Tags").
+		Preload("Venues").
+		Preload("Attendees").
+		Order("begin_date DESC").
+		Find(&events, eventIDs).Error; err != nil {
+		slog.ErrorContext(ctx, "Fail to get attended events", "user_id", userID, "error", err.Error())
+	}
+	return
+}
+
+func (e *EventService) Create(ctx context.Context, user user.User, event EventDTO, tags []string, venueIDs []uint, cfpData *cfp.Cfp) (result Event, err error) {
 	type EventsTag struct {
 		EventID uint
 		TagID   uint
+	}
+	type EventsVenue struct {
+		EventID uint
+		VenueID uint
 	}
 	var (
 		tagIDs []uint
@@ -115,21 +180,38 @@ func (e *EventService) Create(ctx context.Context, user user.User, event EventDT
 			slog.ErrorContext(ctx, "Fail to create event", "error", er.Error())
 			return er
 		}
-		if er = tx.Table("tags").Select("id").Where("tag in = ?", tags).Find(&tagIDs).Error; er != nil {
-			slog.ErrorContext(ctx, "Fail to find tags", "error", er.Error())
-			return er
-		}
-		if len(tagIDs) != len(tags) {
-			slog.ErrorContext(ctx, "Some tags ware not found in the database", "tags_requested", tags, "ids_found", tagIDs)
-			return errors.New("unable to find a match for all the requested tags")
-		}
-		for _, tagID := range tagIDs {
-			eventTag := EventsTag{
-				EventID: result.ID,
-				TagID:   tagID,
+
+		// Link tags
+		if len(tags) > 0 {
+			if er = tx.Table("tags").Select("id").Where("tag in ?", tags).Find(&tagIDs).Error; er != nil {
+				slog.ErrorContext(ctx, "Fail to find tags", "error", er.Error())
+				return er
 			}
-			if er = tx.Create(&eventTag).Error; er != nil {
-				slog.ErrorContext(ctx, "Fail to create join of event and tag", "error", er.Error(), "event", result, "tag_id", tagID)
+			if len(tagIDs) != len(tags) {
+				slog.ErrorContext(ctx, "Some tags were not found in the database", "tags_requested", tags, "ids_found", tagIDs)
+				return errors.New("unable to find a match for all the requested tags")
+			}
+			for _, tagID := range tagIDs {
+				if er = tx.Create(&EventsTag{EventID: result.ID, TagID: tagID}).Error; er != nil {
+					slog.ErrorContext(ctx, "Fail to create join of event and tag", "error", er.Error(), "tag_id", tagID)
+					return er
+				}
+			}
+		}
+
+		// Link venues
+		for _, venueID := range venueIDs {
+			if er = tx.Create(&EventsVenue{EventID: result.ID, VenueID: venueID}).Error; er != nil {
+				slog.ErrorContext(ctx, "Fail to link venue to event", "error", er.Error(), "venue_id", venueID)
+				return er
+			}
+		}
+
+		// Create CFP
+		if cfpData != nil && lo.IsNotEmpty(cfpData.Href) {
+			cfpData.EventID = result.ID
+			if er = tx.Create(cfpData).Error; er != nil {
+				slog.ErrorContext(ctx, "Fail to create CFP", "error", er.Error())
 				return er
 			}
 		}
@@ -137,5 +219,103 @@ func (e *EventService) Create(ctx context.Context, user user.User, event EventDT
 		return nil
 	})
 
+	return
+}
+
+func (e *EventService) Update(ctx context.Context, id uint, dto EventDTO, tags []string, venueIDs []uint, cfpData *cfp.Cfp) (result Event, err error) {
+	type EventsTag struct {
+		EventID uint
+		TagID   uint
+	}
+	type EventsVenue struct {
+		EventID uint
+		VenueID uint
+	}
+
+	var typeOf = lo.Map(dto.TypeOf, func(i EventTypeOf, _ int) string { return i.String() })
+
+	if err = e.db.WithContext(ctx).First(&result, id).Error; err != nil {
+		slog.ErrorContext(ctx, "Fail to find event for update", "id", id, "error", err.Error())
+		return
+	}
+
+	result.Title = dto.Title
+	result.Banner = dto.Banner
+	result.Description = dto.Description
+	result.Href = dto.Href
+	result.TypeOf = append(pq.StringArray{}, typeOf...)
+	result.BeginDate = dto.BeginDate
+	result.EndDate = dto.EndDate
+
+	err = e.db.Transaction(func(tx *gorm.DB) (er error) {
+		if er = tx.Save(&result).Error; er != nil {
+			slog.ErrorContext(ctx, "Fail to update event", "id", id, "error", er.Error())
+			return er
+		}
+
+		// Re-link tags
+		if tags != nil {
+			if er = tx.Where("event_id = ?", id).Delete(&EventsTag{}).Error; er != nil {
+				slog.ErrorContext(ctx, "Fail to clear event tags", "error", er.Error())
+				return er
+			}
+			if len(tags) > 0 {
+				var tagIDs []uint
+				if er = tx.Table("tags").Select("id").Where("tag in ?", tags).Find(&tagIDs).Error; er != nil {
+					return er
+				}
+				for _, tagID := range tagIDs {
+					if er = tx.Create(&EventsTag{EventID: id, TagID: tagID}).Error; er != nil {
+						return er
+					}
+				}
+			}
+		}
+
+		// Re-link venues
+		if venueIDs != nil {
+			if er = tx.Where("event_id = ?", id).Delete(&EventsVenue{}).Error; er != nil {
+				slog.ErrorContext(ctx, "Fail to clear event venues", "error", er.Error())
+				return er
+			}
+			for _, venueID := range venueIDs {
+				if er = tx.Create(&EventsVenue{EventID: id, VenueID: venueID}).Error; er != nil {
+					return er
+				}
+			}
+		}
+
+		// Upsert or delete CFP
+		if cfpData != nil && lo.IsNotEmpty(cfpData.Href) {
+			cfpData.EventID = id
+			var existing cfp.Cfp
+			if er = tx.Where("event_id = ?", id).First(&existing).Error; er != nil {
+				if er == gorm.ErrRecordNotFound {
+					er = tx.Create(cfpData).Error
+				}
+			} else {
+				existing.BeginDate = cfpData.BeginDate
+				existing.EndDate = cfpData.EndDate
+				existing.Href = cfpData.Href
+				er = tx.Save(&existing).Error
+			}
+			if er != nil {
+				return er
+			}
+		} else {
+			// Remove CFP if no data provided
+			tx.Where("event_id = ?", id).Delete(&cfp.Cfp{})
+		}
+
+		return nil
+	})
+
+	return
+}
+
+func (e *EventService) Delete(ctx context.Context, id uint) (err error) {
+	if err = e.db.WithContext(ctx).Delete(&Event{}, id).Error; err != nil {
+		slog.ErrorContext(ctx, "Fail to delete event", "id", id, "error", err.Error())
+	}
 	return
 }

@@ -1,6 +1,9 @@
 package main
 
-import "github.com/marcopollivier/techagenda/cmd"
+import (
+	_ "github.com/joho/godotenv/autoload"
+	"github.com/marcopollivier/techagenda/cmd"
+)
 
 func main() {
 	cmd.Execute()

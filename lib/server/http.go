@@ -45,8 +45,7 @@ func NewHTTPServer(lc fx.Lifecycle) *echo.Echo {
 		OnStart: func(_ context.Context) error {
 			slog.Info(fmt.Sprintf("Starting HTTP server at %d", cfg.HTTPPort))
 			go func() {
-
-				if err := srv.Start(fmt.Sprintf(":%d", cfg.HTTPPort)); err != nil {
+				if err := srv.Start(fmt.Sprintf(":%d", cfg.HTTPPort)); err != nil && !errors.Is(err, http.ErrServerClosed) {
 					slog.Error("Fail to start http server", "error", err)
 					panic(err)
 				}

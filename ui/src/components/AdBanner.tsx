@@ -12,7 +12,7 @@ export default function AdBanner() {
                     <div className="flex mt-10">
                         <a href="#" className="flex items-center justify-between rounded-full bg-white px-4 py-2.5 text-sm font-semibold text-blue-500 shadow-sm hover:bg-gray-100 transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300">
                             <CursorArrowRaysIcon className="-ml-0.5 mr-1.5 h-5 w-5" aria-hidden="true" />
-                            Juntar-se ao bonde
+                            Criar conta
                         </a>
                     </div>
                 </div>

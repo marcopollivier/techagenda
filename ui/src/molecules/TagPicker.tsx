@@ -12,10 +12,11 @@ export default function TagPicker({ tags, selectedTags, setSelected }: TagPicker
 
     const [query, setQuery] = useState('');
     const [dropdown, setDropdown] = useState(false);
+    const safeTags = tags ?? [];
     const filteredTags =
         query === ''
-            ? tags
-            : tags.filter((tag) => {
+            ? safeTags
+            : safeTags.filter((tag) => {
                 return tag.toLowerCase().includes(query.toLowerCase())
             })
 

@@ -19,6 +19,7 @@ export default function EventList({ events, loading }: EventListProps) {
                 <div className="space-y-12 lg:grid lg:grid-cols-3 lg:gap-8 lg:space-y-0">
                     {events?.length > 0 ? events.map((event) => (
                         <Transition
+                            key={event.ID}
                             show={events?.length > 0}
                             enter="transform transition duration-[400ms]"
                             enterFrom="opacity-0 rotate-[-120deg] scale-50"
@@ -30,8 +31,9 @@ export default function EventList({ events, loading }: EventListProps) {
                             <EventCard event={event} />
                         </Transition>
                     )) : null}
-                    {Array(numberOfSkeleton()).fill(0).map((_) => (
+                    {Array(numberOfSkeleton()).fill(0).map((_, i) => (
                         <Transition
+                            key={`skeleton-${i}`}
                             show={loading}
                             enter="transform transition duration-[400ms]"
                             enterFrom="opacity-0 rotate-[-120deg] scale-50"
