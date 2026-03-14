@@ -50,12 +50,12 @@ func (h *OAuthHandler) AuthLogin(c echo.Context) (err error) {
 	}
 	if token, err = session.GenerateJWT(userData.ID, authUser); err != nil {
 		slog.ErrorContext(ctx, "Fail to generate JWT session", "error", err.Error())
-		fmt.Fprintln(res, err)
+		_, _ = fmt.Fprintln(res, err)
 		return
 	}
 	if err = server.StoreInSession(token, req, res); err != nil {
 		slog.ErrorContext(ctx, "Fail to save session on session manager", "error", err.Error())
-		fmt.Fprintln(res, err)
+		_, _ = fmt.Fprintln(res, err)
 		return
 	}
 
@@ -100,17 +100,17 @@ func (h *OAuthHandler) AuthCallback(c echo.Context) (err error) {
 	}
 	if provider, err = gothic.GetProviderName(req); err != nil {
 		slog.ErrorContext(ctx, "Fail to complete user auth", "error", err.Error())
-		fmt.Fprintln(res, err)
+		_, _ = fmt.Fprintln(res, err)
 		return
 	}
 	if _, err = ParseProvider(provider); err != nil {
 		slog.ErrorContext(ctx, fmt.Sprintf("Unexpected provider %s", provider), "error", err.Error())
-		fmt.Fprintln(res, err)
+		_, _ = fmt.Fprintln(res, err)
 		return
 	}
 	if authUser, err = gothic.CompleteUserAuth(res, req); err != nil {
 		slog.ErrorContext(ctx, "Fail to complete user auth", "error", err.Error())
-		fmt.Fprintln(res, err)
+		_, _ = fmt.Fprintln(res, err)
 		return
 	}
 	if userData, err = h.service.Auth(ctx, authUser); err != nil {
@@ -121,12 +121,12 @@ func (h *OAuthHandler) AuthCallback(c echo.Context) (err error) {
 	}
 	if token, err = session.GenerateJWT(userData.ID, authUser); err != nil {
 		slog.ErrorContext(ctx, "Fail to generate JWT session", "error", err.Error())
-		fmt.Fprintln(res, err)
+		_, _ = fmt.Fprintln(res, err)
 		return
 	}
 	if err = server.StoreInSession(token, req, res); err != nil {
 		slog.ErrorContext(ctx, "Fail to save session on session manager", "error", err.Error())
-		fmt.Fprintln(res, err)
+		_, _ = fmt.Fprintln(res, err)
 		return
 	}
 	res.Header().Set("Location", getReferer(req))

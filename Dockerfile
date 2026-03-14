@@ -1,5 +1,5 @@
 # Build image layer
-FROM golang:1.21.5 AS builder
+FROM golang:1.25.5 AS builder
 ARG VERSION
 ADD . /app
 WORKDIR /app

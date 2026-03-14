@@ -56,7 +56,7 @@ func (e *Engine) SafeRenderRoute(config gossr.RenderConfig) (result []byte) {
 			result = []byte("<html><body><h1>Rendering error</h1><p>Please try again.</p></body></html>")
 		}
 	}()
-	result = e.Engine.RenderRoute(config)
+	result = e.RenderRoute(config)
 	panicked = false
 	// Inject <base href="/"> so relative asset paths (./assets/...) resolve
 	// correctly on nested routes like /events/:id
