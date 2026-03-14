@@ -1,6 +1,6 @@
 module github.com/marcopollivier/techagenda
 
-go 1.25.0
+go 1.25.5
 
 require (
 	github.com/buger/jsonparser v1.1.1 // indirect

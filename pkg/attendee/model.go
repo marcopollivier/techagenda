@@ -1,18 +1,17 @@
 package attendee
 
 import (
-	"gorm.io/gorm"
-
+	"github.com/marcopollivier/techagenda/lib/model"
 	"github.com/marcopollivier/techagenda/pkg/user"
 )
 
 type Attendee struct {
-	gorm.Model
+	model.Model
 	FullName    string
 	ContactInfo string
-	Metadata    any `gorm:"serializer:json"`
-	EventID     uint
-	UserID      uint
+	Metadata    any   `gorm:"serializer:json"`
+	EventID     int64 `json:"EventID,string" ts_type:"string"`
+	UserID      int64 `json:"UserID,string" ts_type:"string"`
 
 	User user.User
 }

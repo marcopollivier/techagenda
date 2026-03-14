@@ -2,17 +2,17 @@
 
 
 export interface Cfp {
-    ID: number;
+    ID: string;
     CreatedAt: Time;
     UpdatedAt: Time;
     DeletedAt: DeletedAt;
-    event_id: number;
+    event_id: string;
     begin: Time;
     end: Time;
     href: string;
 }
 export interface Venue {
-    ID: number;
+    ID: string;
     CreatedAt: Time;
     UpdatedAt: Time;
     DeletedAt: DeletedAt;
@@ -23,26 +23,26 @@ export interface Venue {
     long: string;
 }
 export interface Tag {
-    ID: number;
+    ID: string;
     CreatedAt: Time;
     UpdatedAt: Time;
     DeletedAt: DeletedAt;
     tag: string;
 }
 export interface Attendee {
-    ID: number;
+    ID: string;
     CreatedAt: Time;
     UpdatedAt: Time;
     DeletedAt: DeletedAt;
     FullName: string;
     ContactInfo: string;
     Metadata: any;
-    EventID: number;
-    UserID: number;
+    EventID: string;
+    UserID: string;
     User: User;
 }
 export interface Event {
-    ID: number;
+    ID: string;
     CreatedAt: Time;
     UpdatedAt: Time;
     DeletedAt: DeletedAt;
@@ -53,7 +53,7 @@ export interface Event {
     type_of: string[];
     begin: Time;
     end: Time;
-    user_id: number;
+    user_id: string;
     attendees: Attendee[];
     tags: Tag[];
     venues: Venue[];
@@ -68,7 +68,7 @@ export interface Time {
 
 }
 export interface User {
-    ID: number;
+    ID: string;
     CreatedAt: Time;
     UpdatedAt: Time;
     DeletedAt: DeletedAt;

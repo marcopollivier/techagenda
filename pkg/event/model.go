@@ -4,18 +4,18 @@ import (
 	"time"
 
 	"github.com/lib/pq"
+	"github.com/marcopollivier/techagenda/lib/model"
 	"github.com/marcopollivier/techagenda/pkg/attendee"
 	"github.com/marcopollivier/techagenda/pkg/cfp"
 	"github.com/marcopollivier/techagenda/pkg/tag"
 	"github.com/marcopollivier/techagenda/pkg/user"
 	"github.com/marcopollivier/techagenda/pkg/venue"
-	"gorm.io/gorm"
 )
 
 //go:generate go-enum --marshal --sql -f model.go
 
 type Event struct {
-	gorm.Model
+	model.Model
 	Title       string         `json:"title"`
 	Banner      string         `json:"banner"`
 	Description string         `json:"description"`
@@ -23,7 +23,7 @@ type Event struct {
 	TypeOf      pq.StringArray `json:"type_of" gorm:"type:text[]"`
 	BeginDate   time.Time      `json:"begin"`
 	EndDate     time.Time      `json:"end"`
-	UserID      uint           `json:"user_id"`
+	UserID      int64          `json:"user_id,string" ts_type:"string"`
 
 	Attendees []attendee.Attendee `json:"attendees"`
 	Tags      []tag.Tag           `json:"tags" gorm:"many2many:events_tags"`

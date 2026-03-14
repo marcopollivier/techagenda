@@ -88,12 +88,12 @@ func NewLendingHandler(server *echo.Echo, eventService event.Service, tagService
 	server.GET("/events/:id", func(c echo.Context) error {
 		ctx := c.Request().Context()
 
-		id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+		id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 		if err != nil {
 			return c.Redirect(http.StatusFound, "/")
 		}
 
-		ev, err := eventService.GetByID(ctx, uint(id))
+		ev, err := eventService.GetByID(ctx, id)
 		if err != nil {
 			slog.ErrorContext(ctx, "Error fetching event", "id", id, "error", err.Error())
 			return c.Redirect(http.StatusFound, "/")
@@ -148,12 +148,12 @@ func NewLendingHandler(server *echo.Echo, eventService event.Service, tagService
 			return c.JSON(http.StatusUnauthorized, map[string]string{"error": "login required"})
 		}
 
-		id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+		id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid event id"})
 		}
 
-		if err = attendeeService.Add(ctx, uint(id), u.ID, u.Name); err != nil {
+		if err = attendeeService.Add(ctx, id, u.ID, u.Name); err != nil {
 			if errors.Is(err, attendee.ErrPreviouslyCancelled) {
 				return c.JSON(http.StatusConflict, map[string]string{"error": "previously_cancelled"})
 			}
@@ -170,12 +170,12 @@ func NewLendingHandler(server *echo.Echo, eventService event.Service, tagService
 			return c.JSON(http.StatusUnauthorized, map[string]string{"error": "login required"})
 		}
 
-		id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+		id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid event id"})
 		}
 
-		if err = attendeeService.Reactivate(ctx, uint(id), u.ID); err != nil {
+		if err = attendeeService.Reactivate(ctx, id, u.ID); err != nil {
 			slog.ErrorContext(ctx, "Error reactivating attendee", "error", err.Error())
 			return c.JSON(http.StatusInternalServerError, map[string]string{"error": "failed to reactivate"})
 		}
@@ -189,12 +189,12 @@ func NewLendingHandler(server *echo.Echo, eventService event.Service, tagService
 			return c.JSON(http.StatusUnauthorized, map[string]string{"error": "login required"})
 		}
 
-		id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+		id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid event id"})
 		}
 
-		if err = attendeeService.Remove(ctx, uint(id), u.ID); err != nil {
+		if err = attendeeService.Remove(ctx, id, u.ID); err != nil {
 			slog.ErrorContext(ctx, "Error removing attendee", "error", err.Error())
 			return c.JSON(http.StatusInternalServerError, map[string]string{"error": "failed to unregister"})
 		}

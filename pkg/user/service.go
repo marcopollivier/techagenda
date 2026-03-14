@@ -10,12 +10,12 @@ import (
 
 type Service interface {
 	Create(ctx context.Context, u User) (user User, err error)
-	Get(ctx context.Context, userID uint) (user User, err error)
+	Get(ctx context.Context, userID int64) (user User, err error)
 	GetByEmail(ctx context.Context, email string) (user User, err error)
 	GetAll(ctx context.Context) (users []User, err error)
 	ListAll(ctx context.Context, role Role) (users []User, err error)
-	UpdateAvatar(ctx context.Context, userID uint, newAvatarHref string) (user User, err error)
-	UpdateRole(ctx context.Context, userID uint, role Role) error
+	UpdateAvatar(ctx context.Context, userID int64, newAvatarHref string) (user User, err error)
+	UpdateRole(ctx context.Context, userID int64, role Role) error
 }
 
 type UserService struct {
@@ -36,7 +36,7 @@ func (s *UserService) Create(ctx context.Context, u User) (user User, err error)
 	return u, err
 }
 
-func (s *UserService) Get(ctx context.Context, userID uint) (user User, err error) {
+func (s *UserService) Get(ctx context.Context, userID int64) (user User, err error) {
 	if err = s.db.WithContext(ctx).Where("id = ?", userID).First(&user).Error; err != nil {
 		slog.ErrorContext(ctx, "Unable to find user!", "user", userID, "error", err.Error())
 	}
@@ -64,7 +64,7 @@ func (s *UserService) GetAll(ctx context.Context) (users []User, err error) {
 	return users, err
 }
 
-func (s *UserService) UpdateRole(ctx context.Context, userID uint, role Role) error {
+func (s *UserService) UpdateRole(ctx context.Context, userID int64, role Role) error {
 	result := s.db.WithContext(ctx).Model(&User{}).Where("id = ?", userID).Update("role", role)
 	if result.Error != nil {
 		slog.ErrorContext(ctx, "Fail to update user role", "user", userID, "error", result.Error.Error())
@@ -76,7 +76,7 @@ func (s *UserService) UpdateRole(ctx context.Context, userID uint, role Role) er
 	return nil
 }
 
-func (s *UserService) UpdateAvatar(ctx context.Context, userID uint, newAvatarHref string) (user User, err error) {
+func (s *UserService) UpdateAvatar(ctx context.Context, userID int64, newAvatarHref string) (user User, err error) {
 	if err = s.db.WithContext(ctx).Where("id = ?", userID).First(&user).Error; err != nil {
 		slog.ErrorContext(ctx, "Unable to find user!", "user", userID, "error", err.Error())
 	}

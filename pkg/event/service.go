@@ -17,12 +17,12 @@ import (
 
 type Service interface {
 	Get(ctx context.Context, name, city string, tags []string, typeOf []EventTypeOf, available bool, page, limit int) (events []Event, err error)
-	GetByID(ctx context.Context, id uint) (event Event, err error)
-	GetByCreator(ctx context.Context, userID uint) (events []Event, err error)
-	GetByUserAttendance(ctx context.Context, userID uint) (events []Event, err error)
-	Create(ctx context.Context, user user.User, event EventDTO, tags []string, venueIDs []uint, cfpData *cfp.Cfp) (result Event, err error)
-	Update(ctx context.Context, id uint, event EventDTO, tags []string, venueIDs []uint, cfpData *cfp.Cfp) (result Event, err error)
-	Delete(ctx context.Context, id uint) (err error)
+	GetByID(ctx context.Context, id int64) (event Event, err error)
+	GetByCreator(ctx context.Context, userID int64) (events []Event, err error)
+	GetByUserAttendance(ctx context.Context, userID int64) (events []Event, err error)
+	Create(ctx context.Context, user user.User, event EventDTO, tags []string, venueIDs []int64, cfpData *cfp.Cfp) (result Event, err error)
+	Update(ctx context.Context, id int64, event EventDTO, tags []string, venueIDs []int64, cfpData *cfp.Cfp) (result Event, err error)
+	Delete(ctx context.Context, id int64) (err error)
 }
 
 type EventService struct {
@@ -96,7 +96,7 @@ func (e *EventService) Get(
 	return
 }
 
-func (e *EventService) GetByID(ctx context.Context, id uint) (event Event, err error) {
+func (e *EventService) GetByID(ctx context.Context, id int64) (event Event, err error) {
 	if err = e.db.WithContext(ctx).
 		Preload("Tags").
 		Preload("Venues").
@@ -110,7 +110,7 @@ func (e *EventService) GetByID(ctx context.Context, id uint) (event Event, err e
 	return
 }
 
-func (e *EventService) GetByCreator(ctx context.Context, userID uint) (events []Event, err error) {
+func (e *EventService) GetByCreator(ctx context.Context, userID int64) (events []Event, err error) {
 	if err = e.db.WithContext(ctx).
 		Where("user_id = ?", userID).
 		Preload("Tags").
@@ -126,8 +126,8 @@ func (e *EventService) GetByCreator(ctx context.Context, userID uint) (events []
 	return
 }
 
-func (e *EventService) GetByUserAttendance(ctx context.Context, userID uint) (events []Event, err error) {
-	var eventIDs []uint
+func (e *EventService) GetByUserAttendance(ctx context.Context, userID int64) (events []Event, err error) {
+	var eventIDs []int64
 	if err = e.db.WithContext(ctx).
 		Table("attendees").
 		Select("event_id").
@@ -150,17 +150,17 @@ func (e *EventService) GetByUserAttendance(ctx context.Context, userID uint) (ev
 	return
 }
 
-func (e *EventService) Create(ctx context.Context, user user.User, event EventDTO, tags []string, venueIDs []uint, cfpData *cfp.Cfp) (result Event, err error) {
+func (e *EventService) Create(ctx context.Context, user user.User, event EventDTO, tags []string, venueIDs []int64, cfpData *cfp.Cfp) (result Event, err error) {
 	type EventsTag struct {
-		EventID uint
-		TagID   uint
+		EventID int64
+		TagID   int64
 	}
 	type EventsVenue struct {
-		EventID uint
-		VenueID uint
+		EventID int64
+		VenueID int64
 	}
 	var (
-		tagIDs []uint
+		tagIDs []int64
 		typeOf = lo.Map(event.TypeOf, func(i EventTypeOf, _ int) string { return i.String() })
 	)
 
@@ -222,14 +222,14 @@ func (e *EventService) Create(ctx context.Context, user user.User, event EventDT
 	return
 }
 
-func (e *EventService) Update(ctx context.Context, id uint, dto EventDTO, tags []string, venueIDs []uint, cfpData *cfp.Cfp) (result Event, err error) {
+func (e *EventService) Update(ctx context.Context, id int64, dto EventDTO, tags []string, venueIDs []int64, cfpData *cfp.Cfp) (result Event, err error) {
 	type EventsTag struct {
-		EventID uint
-		TagID   uint
+		EventID int64
+		TagID   int64
 	}
 	type EventsVenue struct {
-		EventID uint
-		VenueID uint
+		EventID int64
+		VenueID int64
 	}
 
 	var typeOf = lo.Map(dto.TypeOf, func(i EventTypeOf, _ int) string { return i.String() })
@@ -260,7 +260,7 @@ func (e *EventService) Update(ctx context.Context, id uint, dto EventDTO, tags [
 				return er
 			}
 			if len(tags) > 0 {
-				var tagIDs []uint
+				var tagIDs []int64
 				if er = tx.Table("tags").Select("id").Where("tag in ?", tags).Find(&tagIDs).Error; er != nil {
 					return er
 				}
@@ -313,7 +313,7 @@ func (e *EventService) Update(ctx context.Context, id uint, dto EventDTO, tags [
 	return
 }
 
-func (e *EventService) Delete(ctx context.Context, id uint) (err error) {
+func (e *EventService) Delete(ctx context.Context, id int64) (err error) {
 	if err = e.db.WithContext(ctx).Delete(&Event{}, id).Error; err != nil {
 		slog.ErrorContext(ctx, "Fail to delete event", "id", id, "error", err.Error())
 	}

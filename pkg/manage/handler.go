@@ -80,7 +80,7 @@ func (h *ManageHandler) ManagePage(c echo.Context) error {
 type eventRequest struct {
 	event.EventDTO
 	Tags     []string `json:"tags"`
-	VenueIDs []uint   `json:"venue_ids"`
+	VenueIDs []string `json:"venue_ids"`
 	CfpHref  string   `json:"cfp_href"`
 	CfpBegin string   `json:"cfp_begin"`
 	CfpEnd   string   `json:"cfp_end"`
@@ -113,7 +113,12 @@ func (h *ManageHandler) CreateEvent(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
 	}
 
-	result, err := h.eventService.Create(ctx, *currentUser, req.EventDTO, req.Tags, req.VenueIDs, req.buildCfp())
+	venueIDs, err := parseVenueIDs(req.VenueIDs)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid venue_id"})
+	}
+
+	result, err := h.eventService.Create(ctx, *currentUser, req.EventDTO, req.Tags, venueIDs, req.buildCfp())
 	if err != nil {
 		slog.ErrorContext(ctx, "Fail to create event", "error", err.Error())
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
@@ -151,7 +156,12 @@ func (h *ManageHandler) UpdateEvent(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
 	}
 
-	result, err := h.eventService.Update(ctx, id, req.EventDTO, req.Tags, req.VenueIDs, req.buildCfp())
+	venueIDs, verr := parseVenueIDs(req.VenueIDs)
+	if verr != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid venue_id"})
+	}
+
+	result, err := h.eventService.Update(ctx, id, req.EventDTO, req.Tags, venueIDs, req.buildCfp())
 	if err != nil {
 		slog.ErrorContext(ctx, "Fail to update event", "id", id, "error", err.Error())
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
@@ -258,7 +268,18 @@ func ModMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 
 // --- Helpers ---
 
-func parseID(c echo.Context) (uint, error) {
-	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
-	return uint(id), err
+func parseID(c echo.Context) (int64, error) {
+	return strconv.ParseInt(c.Param("id"), 10, 64)
+}
+
+func parseVenueIDs(raw []string) ([]int64, error) {
+	result := make([]int64, len(raw))
+	for i, v := range raw {
+		parsed, err := strconv.ParseInt(v, 10, 64)
+		if err != nil {
+			return nil, err
+		}
+		result[i] = parsed
+	}
+	return result, nil
 }

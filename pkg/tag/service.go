@@ -11,7 +11,7 @@ type Service interface {
 	GetAllTags(ctx context.Context) (t []string, err error)
 	GetAll(ctx context.Context) (tags []Tag, err error)
 	Create(ctx context.Context, name string) (result Tag, err error)
-	Delete(ctx context.Context, id uint) (err error)
+	Delete(ctx context.Context, id int64) (err error)
 }
 
 type TagsService struct {
@@ -46,7 +46,7 @@ func (s *TagsService) Create(ctx context.Context, name string) (result Tag, err 
 	return
 }
 
-func (s *TagsService) Delete(ctx context.Context, id uint) (err error) {
+func (s *TagsService) Delete(ctx context.Context, id int64) (err error) {
 	if err = s.db.WithContext(ctx).Delete(&Tag{}, id).Error; err != nil {
 		slog.ErrorContext(ctx, "Fail to delete tag", "id", id, "error", err.Error())
 	}

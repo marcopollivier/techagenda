@@ -1,9 +1,9 @@
 package venue
 
-import "gorm.io/gorm"
+import "github.com/marcopollivier/techagenda/lib/model"
 
 type Venue struct {
-	gorm.Model
+	model.Model
 	Alias   string `json:"alias"`
 	Address string `json:"address"`
 	City    string `json:"city"`

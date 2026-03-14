@@ -11,10 +11,10 @@ import (
 var ErrPreviouslyCancelled = errors.New("attendee previously cancelled")
 
 type Service interface {
-	Add(ctx context.Context, eventID, userID uint, fullName string) error
-	Remove(ctx context.Context, eventID, userID uint) error
-	Reactivate(ctx context.Context, eventID, userID uint) error
-	GetCancelledByEvent(ctx context.Context, eventID uint) ([]Attendee, error)
+	Add(ctx context.Context, eventID, userID int64, fullName string) error
+	Remove(ctx context.Context, eventID, userID int64) error
+	Reactivate(ctx context.Context, eventID, userID int64) error
+	GetCancelledByEvent(ctx context.Context, eventID int64) ([]Attendee, error)
 }
 
 type AttendeeService struct {
@@ -25,7 +25,7 @@ func NewService(db *gorm.DB) Service {
 	return &AttendeeService{db: db}
 }
 
-func (s *AttendeeService) Add(ctx context.Context, eventID, userID uint, fullName string) error {
+func (s *AttendeeService) Add(ctx context.Context, eventID, userID int64, fullName string) error {
 	// Check active record first (GORM filters deleted_at IS NULL by default)
 	var existing Attendee
 	err := s.db.WithContext(ctx).
@@ -60,7 +60,7 @@ func (s *AttendeeService) Add(ctx context.Context, eventID, userID uint, fullNam
 	return nil
 }
 
-func (s *AttendeeService) Remove(ctx context.Context, eventID, userID uint) error {
+func (s *AttendeeService) Remove(ctx context.Context, eventID, userID int64) error {
 	if err := s.db.WithContext(ctx).
 		Where("event_id = ? AND user_id = ?", eventID, userID).
 		Delete(&Attendee{}).Error; err != nil {
@@ -70,7 +70,7 @@ func (s *AttendeeService) Remove(ctx context.Context, eventID, userID uint) erro
 	return nil
 }
 
-func (s *AttendeeService) GetCancelledByEvent(ctx context.Context, eventID uint) ([]Attendee, error) {
+func (s *AttendeeService) GetCancelledByEvent(ctx context.Context, eventID int64) ([]Attendee, error) {
 	var attendees []Attendee
 	if err := s.db.WithContext(ctx).Unscoped().
 		Preload("User").
@@ -82,7 +82,7 @@ func (s *AttendeeService) GetCancelledByEvent(ctx context.Context, eventID uint)
 	return attendees, nil
 }
 
-func (s *AttendeeService) Reactivate(ctx context.Context, eventID, userID uint) error {
+func (s *AttendeeService) Reactivate(ctx context.Context, eventID, userID int64) error {
 	result := s.db.WithContext(ctx).Unscoped().
 		Model(&Attendee{}).
 		Where("event_id = ? AND user_id = ? AND deleted_at IS NOT NULL", eventID, userID).

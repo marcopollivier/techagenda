@@ -12,13 +12,13 @@ import (
 )
 
 type UserSession struct {
-	ID       uint      `json:"id"`
+	ID       int64     `json:"id"`
 	Provider string    `json:"provider"`
 	Token    string    `json:"token"`
 	AuthUser goth.User `json:"auth_user"`
 }
 
-func GenerateJWT(userID uint, auth goth.User) (tokenString string, err error) {
+func GenerateJWT(userID int64, auth goth.User) (tokenString string, err error) {
 	var (
 		pk     = ed25519.PrivateKey(config.Get().JWT.Private)
 		token  = jwt.New(jwt.SigningMethodEdDSA)

@@ -1,8 +1,8 @@
 package tag
 
-import "gorm.io/gorm"
+import "github.com/marcopollivier/techagenda/lib/model"
 
 type Tag struct {
-	gorm.Model
+	model.Model
 	Tag string `json:"tag"`
 }

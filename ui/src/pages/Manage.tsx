@@ -14,7 +14,7 @@ import { debugLog } from "../lib/debug";
 interface EventFormData {
     title: string; banner: string; description: string; href: string;
     type_of: string; begin: string; end: string;
-    tags: string[]; venue_ids: number[];
+    tags: string[]; venue_ids: string[];
     cfp_href: string; cfp_begin: string; cfp_end: string; has_cfp: boolean;
 }
 
@@ -29,7 +29,7 @@ export default function Manage({ Events, User, Tags, TagsList, Venues, Environme
     const [modalOpen, setModalOpen] = useState(false);
     const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
     const [editingEvent, setEditingEvent] = useState<EventType | null>(null);
-    const [deletingEventId, setDeletingEventId] = useState<number | null>(null);
+    const [deletingEventId, setDeletingEventId] = useState<string | null>(null);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -79,7 +79,7 @@ export default function Manage({ Events, User, Tags, TagsList, Venues, Environme
         setModalOpen(true);
     };
 
-    const openDelete = (id: number) => {
+    const openDelete = (id: string) => {
         setDeletingEventId(id);
         setDeleteConfirmOpen(true);
     };
@@ -437,8 +437,8 @@ function formatDateForInput(date: any): string {
 
 interface VenuePickerProps {
     venues: VenueType[];
-    selectedIds: number[];
-    onChange: (ids: number[]) => void;
+    selectedIds: string[];
+    onChange: (ids: string[]) => void;
     inlineVenueOpen: boolean;
     setInlineVenueOpen: (open: boolean) => void;
     inlineVenueForm: VenueFormData;
@@ -463,7 +463,7 @@ function VenuePicker({ venues, selectedIds, onChange, inlineVenueOpen, setInline
         setQuery("");
     };
 
-    const removeVenue = (id: number) => {
+    const removeVenue = (id: string) => {
         onChange(selectedIds.filter((vid) => vid !== id));
     };
 

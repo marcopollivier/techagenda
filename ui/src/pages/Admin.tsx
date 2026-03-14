@@ -24,7 +24,7 @@ export default function Admin({ Events, User, Tags, TagsList, Venues, Users, Env
     const [modalOpen, setModalOpen] = useState(false);
     const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
     const [editingEvent, setEditingEvent] = useState<EventType | null>(null);
-    const [deletingEventId, setDeletingEventId] = useState<number | null>(null);
+    const [deletingEventId, setDeletingEventId] = useState<string | null>(null);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [attendeesModalEvent, setAttendeesModalEvent] = useState<EventType | null>(null);
@@ -43,13 +43,13 @@ export default function Admin({ Events, User, Tags, TagsList, Venues, Users, Env
 
     // --- Users state ---
     const [users, setUsers] = useState<UserType[]>(Users ?? []);
-    const [updatingUserId, setUpdatingUserId] = useState<number | null>(null);
+    const [updatingUserId, setUpdatingUserId] = useState<string | null>(null);
     const [userSearch, setUserSearch] = useState("");
     const [userPage, setUserPage] = useState(0);
     const usersPerPage = 10;
 
     // --- User handlers ---
-    const handleRoleChange = async (userId: number, newRole: string) => {
+    const handleRoleChange = async (userId: string, newRole: string) => {
         setUpdatingUserId(userId);
         try {
             await axios.put(`/admin/api/users/${userId}/role`, { role: newRole });
@@ -103,7 +103,7 @@ export default function Admin({ Events, User, Tags, TagsList, Venues, Users, Env
         setModalOpen(true);
     };
 
-    const openDelete = (id: number) => {
+    const openDelete = (id: string) => {
         setDeletingEventId(id);
         setDeleteConfirmOpen(true);
     };
@@ -155,7 +155,7 @@ export default function Admin({ Events, User, Tags, TagsList, Venues, Users, Env
     };
 
     // --- Attendee handlers ---
-    const fetchCancelledAttendees = async (eventId: number) => {
+    const fetchCancelledAttendees = async (eventId: string) => {
         try {
             const resp = await axios.get(`/admin/api/events/${eventId}/attendees/cancelled`);
             setCancelledAttendees(resp.data ?? []);
@@ -169,7 +169,7 @@ export default function Admin({ Events, User, Tags, TagsList, Venues, Users, Env
         fetchCancelledAttendees(event.ID);
     };
 
-    const handleRemoveAttendee = async (eventId: number, userId: number) => {
+    const handleRemoveAttendee = async (eventId: string, userId: string) => {
         try {
             await axios.delete(`/admin/api/events/${eventId}/attendees/${userId}`);
             const updated = events.map((e) =>
@@ -186,7 +186,7 @@ export default function Admin({ Events, User, Tags, TagsList, Venues, Users, Env
         }
     };
 
-    const handleReactivateAttendee = async (eventId: number, userId: number) => {
+    const handleReactivateAttendee = async (eventId: string, userId: string) => {
         try {
             await axios.put(`/admin/api/events/${eventId}/attendees/${userId}/reactivate`);
             // Reload event to get updated attendees list
@@ -212,7 +212,7 @@ export default function Admin({ Events, User, Tags, TagsList, Venues, Users, Env
         }
     };
 
-    const handleDeleteTag = async (id: number) => {
+    const handleDeleteTag = async (id: string) => {
         try {
             await axios.delete(`/admin/api/tags/${id}`);
             setTagsList(tagsList.filter((t) => t.ID !== id));
@@ -258,7 +258,7 @@ export default function Admin({ Events, User, Tags, TagsList, Venues, Users, Env
         }
     };
 
-    const handleDeleteVenue = async (id: number) => {
+    const handleDeleteVenue = async (id: string) => {
         try {
             await axios.delete(`/admin/api/venues/${id}`);
             setVenues(venues.filter((v) => v.ID !== id));
@@ -988,7 +988,7 @@ export default function Admin({ Events, User, Tags, TagsList, Venues, Users, Env
 interface EventFormData {
     title: string; banner: string; description: string; href: string;
     type_of: string; begin: string; end: string;
-    tags: string[]; venue_ids: number[];
+    tags: string[]; venue_ids: string[];
     cfp_href: string; cfp_begin: string; cfp_end: string; has_cfp: boolean;
 }
 
@@ -1020,8 +1020,8 @@ function formatDateForInput(date: any): string {
 
 interface VenuePickerProps {
     venues: VenueType[];
-    selectedIds: number[];
-    onChange: (ids: number[]) => void;
+    selectedIds: string[];
+    onChange: (ids: string[]) => void;
     inlineVenueOpen: boolean;
     setInlineVenueOpen: (open: boolean) => void;
     inlineVenueForm: VenueFormData;
@@ -1046,7 +1046,7 @@ function VenuePicker({ venues, selectedIds, onChange, inlineVenueOpen, setInline
         setQuery("");
     };
 
-    const removeVenue = (id: number) => {
+    const removeVenue = (id: string) => {
         onChange(selectedIds.filter((vid) => vid !== id));
     };
 

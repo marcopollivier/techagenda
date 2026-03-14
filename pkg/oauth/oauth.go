@@ -1,14 +1,14 @@
 package oauth
 
 import (
-	"gorm.io/gorm"
+	"github.com/marcopollivier/techagenda/lib/model"
 )
 
 //go:generate go-enum --marshal --sql -f oauth.go
 
 type OAuth struct {
-	gorm.Model
-	UserID     uint
+	model.Model
+	UserID     int64
 	Provider   Provider
 	Identifier string
 }

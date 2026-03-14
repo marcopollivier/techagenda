@@ -1,9 +1,12 @@
 package config
 
 import (
+	"fmt"
 	"log/slog"
+	"os"
 
 	"github.com/caarlos0/env/v10"
+	"github.com/joho/godotenv"
 	"github.com/samber/lo"
 	"go.uber.org/atomic"
 )
@@ -15,6 +18,18 @@ var (
 )
 
 func init() {
+	env := os.Getenv("ENV")
+	envPath := "./.env"
+	if lo.IsNotEmpty(env) {
+		envPath = "./.env." + env
+	}
+	slog.Info(fmt.Sprintf("Loading config from %s", envPath))
+	err := godotenv.Load(envPath)
+	if err != nil {
+		slog.Error("fail to load config", err)
+	}
+
+	// Once .env is loaded, start config parsing
 	cfg, err := load()
 	if err != nil {
 		configErr = err

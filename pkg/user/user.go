@@ -1,11 +1,11 @@
 package user
 
-import "gorm.io/gorm"
+import "github.com/marcopollivier/techagenda/lib/model"
 
 //go:generate go-enum --marshal --sql -f user.go
 
 type User struct {
-	gorm.Model
+	model.Model
 	Email  string
 	Name   string
 	Role   Role

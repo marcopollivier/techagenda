@@ -10,10 +10,10 @@ import (
 type Service interface {
 	GetAllCities(ctx context.Context) (t []string, err error)
 	GetAll(ctx context.Context) (venues []Venue, err error)
-	GetByID(ctx context.Context, id uint) (venue Venue, err error)
+	GetByID(ctx context.Context, id int64) (venue Venue, err error)
 	Create(ctx context.Context, venue Venue) (result Venue, err error)
-	Update(ctx context.Context, id uint, venue Venue) (result Venue, err error)
-	Delete(ctx context.Context, id uint) (err error)
+	Update(ctx context.Context, id int64, venue Venue) (result Venue, err error)
+	Delete(ctx context.Context, id int64) (err error)
 }
 
 type VenueService struct {
@@ -40,7 +40,7 @@ func (s *VenueService) GetAll(ctx context.Context) (venues []Venue, err error) {
 	return
 }
 
-func (s *VenueService) GetByID(ctx context.Context, id uint) (venue Venue, err error) {
+func (s *VenueService) GetByID(ctx context.Context, id int64) (venue Venue, err error) {
 	if err = s.db.WithContext(ctx).First(&venue, id).Error; err != nil {
 		slog.ErrorContext(ctx, "Fail to get venue by id", "id", id, "error", err.Error())
 	}
@@ -55,7 +55,7 @@ func (s *VenueService) Create(ctx context.Context, venue Venue) (result Venue, e
 	return
 }
 
-func (s *VenueService) Update(ctx context.Context, id uint, venue Venue) (result Venue, err error) {
+func (s *VenueService) Update(ctx context.Context, id int64, venue Venue) (result Venue, err error) {
 	if err = s.db.WithContext(ctx).First(&result, id).Error; err != nil {
 		slog.ErrorContext(ctx, "Fail to find venue for update", "id", id, "error", err.Error())
 		return
@@ -71,7 +71,7 @@ func (s *VenueService) Update(ctx context.Context, id uint, venue Venue) (result
 	return
 }
 
-func (s *VenueService) Delete(ctx context.Context, id uint) (err error) {
+func (s *VenueService) Delete(ctx context.Context, id int64) (err error) {
 	if err = s.db.WithContext(ctx).Delete(&Venue{}, id).Error; err != nil {
 		slog.ErrorContext(ctx, "Fail to delete venue", "id", id, "error", err.Error())
 	}
