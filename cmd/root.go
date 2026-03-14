@@ -12,6 +12,10 @@ import (
 	_ "github.com/marcopollivier/techagenda/lib/logger"
 	"github.com/marcopollivier/techagenda/lib/server"
 	"github.com/marcopollivier/techagenda/lib/ssr"
+	"github.com/marcopollivier/techagenda/pkg/admin"
+	"github.com/marcopollivier/techagenda/pkg/attendee"
+	"github.com/marcopollivier/techagenda/pkg/manage"
+	"github.com/marcopollivier/techagenda/pkg/cfp"
 	"github.com/marcopollivier/techagenda/pkg/event"
 	"github.com/marcopollivier/techagenda/pkg/lending"
 	"github.com/marcopollivier/techagenda/pkg/oauth"
@@ -35,8 +39,12 @@ var rootCmd = &cobra.Command{
 			event.Module(),
 			tag.Module(),
 			venue.Module(),
+			cfp.Module(),
+			attendee.Module(),
 
 			lending.Module(),
+			admin.Module(),
+			manage.Module(),
 		).Run()
 	},
 }

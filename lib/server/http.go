@@ -45,8 +45,7 @@ func NewHTTPServer(lc fx.Lifecycle) *echo.Echo {
 		OnStart: func(_ context.Context) error {
 			slog.Info(fmt.Sprintf("Starting HTTP server at %d", cfg.HTTPPort))
 			go func() {
-
-				if err := srv.Start(fmt.Sprintf(":%d", cfg.HTTPPort)); err != nil {
+				if err := srv.Start(fmt.Sprintf(":%d", cfg.HTTPPort)); err != nil && !errors.Is(err, http.ErrServerClosed) {
 					slog.Error("Fail to start http server", "error", err)
 					panic(err)
 				}
@@ -96,10 +95,10 @@ func Logout(res http.ResponseWriter, req *http.Request) error {
 		return err
 	}
 	session.Options.MaxAge = -1
-	session.Values = make(map[interface{}]interface{})
+	session.Values = make(map[any]any)
 	err = session.Save(req, res)
 	if err != nil {
-		return errors.New("Could not delete user session ")
+		return errors.New("could not delete user session")
 	}
 	return nil
 }

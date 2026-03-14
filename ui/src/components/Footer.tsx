@@ -37,13 +37,13 @@ export default function Footer() {
                 <div className="mx-auto mt-10 grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 border-t border-gray-200 pt-4 lg:mx-0 lg:max-w-none lg:grid-cols-3"></div>
                 {/* copyright and links */}
                 <div className="flex items-center justify-between">
-                    <p className="flex">© 2024 Tech Agenda</p>
+                    <p className="flex">© {new Date().getFullYear()} Tech Agenda</p>
                     <div className="flex items-center justify-between text-slate-700 antialiased font-semibold">
-                        <p className="hover:bg-blue-500 hover:text-white rounded-full px-3 py-1 text-sm">Github</p>
+                        <a href="https://github.com/marcopollivier/techagenda" target="_blank" rel="noopener noreferrer" className="hover:bg-blue-500 hover:text-white rounded-full px-3 py-1 text-sm">Github</a>
                         <div className="px-4">
                             <div className="rounded border-2 border-slate-700"></div>
                         </div>
-                        <p className="hover:bg-blue-500 hover:text-white rounded-full px-3 py-1 text-sm">Termos</p>
+                        <a href="/termos" className="hover:bg-blue-500 hover:text-white rounded-full px-3 py-1 text-sm">Termos de Uso</a>
                     </div>
                     <div className='flex self-en justify-between'>
                         <p>Construído com tecnologia brasileira</p>

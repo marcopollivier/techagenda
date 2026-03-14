@@ -60,23 +60,37 @@ function ActiveUserMenu({ user }: LoginProps) {
                     <Menu.Item>
                         {({ active }) => (
                             <a
-                                href="#"
+                                href="/profile"
                                 className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
                             >
-                                Perfil
+                                Meu perfil
                             </a>
                         )}
                     </Menu.Item>
-                    <Menu.Item>
-                        {({ active }) => (
-                            <a
-                                href="#"
-                                className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
-                            >
-                                Meus eventos
-                            </a>
-                        )}
-                    </Menu.Item>
+                    {(user.Role === "admin" || user.Role === "mod") && (
+                        <Menu.Item>
+                            {({ active }) => (
+                                <a
+                                    href="/manage"
+                                    className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700 font-medium')}
+                                >
+                                    Gerenciar eventos
+                                </a>
+                            )}
+                        </Menu.Item>
+                    )}
+                    {user.Role === "admin" && (
+                        <Menu.Item>
+                            {({ active }) => (
+                                <a
+                                    href="/admin"
+                                    className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700 font-medium')}
+                                >
+                                    Admin Panel
+                                </a>
+                            )}
+                        </Menu.Item>
+                    )}
                     <Menu.Item>
                         {({ active }) => (
                             <a

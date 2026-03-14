@@ -1,6 +1,7 @@
 ### Project basic ignorable files ###
 \.env.*
 bin/
+.claude/
 
 ### Emacs ###
 # -*- mode: gitignore; -*-

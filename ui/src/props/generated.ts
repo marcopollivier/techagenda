@@ -6,7 +6,7 @@ export interface Cfp {
     CreatedAt: Time;
     UpdatedAt: Time;
     DeletedAt: DeletedAt;
-    EventID: number;
+    event_id: number;
     begin: Time;
     end: Time;
     href: string;
@@ -79,10 +79,14 @@ export interface User {
     Avatar: string;
 }
 export interface Props {
+    Environment: string;
     MainTag: string;
     User: User;
     Event: Event;
     Events: Event[];
     Tags: string[];
+    TagsList: Tag[];
     Cities: string[];
+    Venues: Venue[];
+    Users: User[];
 }
