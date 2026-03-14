@@ -26,7 +26,7 @@ func init() {
 	slog.Info(fmt.Sprintf("Loading config from %s", envPath))
 	err := godotenv.Load(envPath)
 	if err != nil {
-		slog.Error("fail to load config", err)
+		slog.Error("fail to load config", slog.Any("err", err))
 	}
 
 	// Once .env is loaded, start config parsing
