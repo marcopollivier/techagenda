@@ -85,10 +85,8 @@ func (s *OAuthService) Auth(ctx context.Context, oauthUser goth.User) (authUser 
 	}
 
 	go func() {
-		if authUser.Avatar != oauthUser.AvatarURL {
-			if _, err := s.userService.UpdateAvatar(context.Background(), authUser.ID, oauthUser.AvatarURL); err != nil {
-				slog.Error("Unable to update users avatar", "user_id", authUser.ID, "error", err.Error())
-			}
+		if err := s.userService.SyncProfile(context.Background(), authUser.ID, oauthUser.AvatarURL, oauthUser.Description); err != nil {
+			slog.Error("Unable to sync user profile", "user_id", authUser.ID, "error", err.Error())
 		}
 	}()
 	return
