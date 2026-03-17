@@ -16,6 +16,7 @@ type Service interface {
 	ListAll(ctx context.Context, role Role) (users []User, err error)
 	UpdateAvatar(ctx context.Context, userID int64, newAvatarHref string) (user User, err error)
 	UpdateRole(ctx context.Context, userID int64, role Role) error
+	SyncProfile(ctx context.Context, userID int64, avatar, bio string) error
 }
 
 type UserService struct {
@@ -85,4 +86,28 @@ func (s *UserService) UpdateAvatar(ctx context.Context, userID int64, newAvatarH
 		slog.ErrorContext(ctx, "Unable to update users avatar!", "user", user.ID, "error", errI.Error())
 	}
 	return user, err
+}
+
+func (s *UserService) SyncProfile(ctx context.Context, userID int64, avatar, bio string) error {
+	updates := map[string]any{}
+	var current User
+	if err := s.db.WithContext(ctx).Where("id = ?", userID).First(&current).Error; err != nil {
+		slog.ErrorContext(ctx, "Unable to find user for profile sync", "user_id", userID, "error", err.Error())
+		return fmt.Errorf("finding user for profile sync: %w", err)
+	}
+	if current.Avatar != avatar {
+		updates["avatar"] = avatar
+	}
+	if current.Bio != bio && bio != "" {
+		updates["bio"] = bio
+	}
+	if len(updates) == 0 {
+		return nil
+	}
+	if err := s.db.WithContext(ctx).Model(&User{}).Where("id = ?", userID).Updates(updates).Error; err != nil {
+		slog.ErrorContext(ctx, "Unable to sync user profile", "user_id", userID, "error", err.Error())
+		return fmt.Errorf("syncing user profile: %w", err)
+	}
+	slog.InfoContext(ctx, "Synced user profile from OAuth provider", "user_id", userID, "fields", updates)
+	return nil
 }
