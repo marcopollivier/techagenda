@@ -3,6 +3,7 @@ module github.com/marcopollivier/techagenda
 go 1.25.5
 
 require (
+	github.com/DATA-DOG/go-sqlmock v1.5.2 // indirect
 	github.com/buger/jsonparser v1.1.1 // indirect
 	github.com/caarlos0/env/v10 v10.0.0 // indirect
 	github.com/evanw/esbuild v0.19.11 // indirect

@@ -73,7 +73,7 @@ func (e *EventService) Get(
 		Limit(limit)
 
 	if lo.IsNotEmpty(name) {
-		base.Where(fmt.Sprintf("title like '%%%s%%'", name))
+		base.Where("title LIKE ?", "%"+name+"%")
 	}
 	if lo.IsNotEmpty(city) {
 		base.Where("venues.city = ?", city)
@@ -82,9 +82,9 @@ func (e *EventService) Get(
 		base.Where("tags.tag in ?", tags)
 	}
 	if len(typeOf) > 0 {
-		base.Where(fmt.Sprintf("type_of <@ array[%s]", strings.Join(lo.Map(typeOf, func(i EventTypeOf, _ int) string {
-			return fmt.Sprintf("'%s'::eventtypeof", i.String())
-		}), ",")))
+		placeholders := lo.Map(typeOf, func(_ EventTypeOf, _ int) string { return "?::eventtypeof" })
+		values := lo.Map(typeOf, func(i EventTypeOf, _ int) any { return i.String() })
+		base.Where(fmt.Sprintf("type_of <@ array[%s]", strings.Join(placeholders, ",")), values...)
 	}
 	if available {
 		base.Where("begin_date <= ?", now).Where("end_date > ?", now)
