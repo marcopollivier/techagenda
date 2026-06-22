@@ -1,7 +1,7 @@
 ### Project basic ignorable files ###
 \.env.*
 bin/
-.claude/
+.claude/settings.local.json
 
 ### Emacs ###
 # -*- mode: gitignore; -*-
