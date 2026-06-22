@@ -1,23 +1,100 @@
-# Tech Agenda - A agenda para o povo de tecnologia :) 
+<div align="center">
+  <img src="ui/public/logo.svg" alt="Tech Agenda" height="80" />
+  <h1>Tech Agenda</h1>
+  <p>A agenda de eventos para o povo de tecnologia. 🇧🇷</p>
+</div>
 
-## Motivação
+## O que é
 
-Fala, pessoal. Tudo bem? 
+A **Tech Agenda** é um projeto **open source** que centraliza eventos de tecnologia
+que estão acontecendo ou prestes a acontecer — para você não perder mais aquela
+inscrição que queria fazer. A ideia nasceu da frustração de não encontrar um lugar
+ativo que reunisse essas informações: os que existiam estavam descontinuados.
 
-Eu sou uma pessoa que ama eventos de tecnologia. Mesmo não podendo participar tanto quando eu gostaria, eu gosto de ficar por dentro e fico triste quando perco a inscrição de algum que eu queria muito, mas não me dei conta que estava para acontecer. 
+Os eventos são organizados pelas áreas:
 
-Dito isso, fui atrás de algum lugar onde centralizasse esse tipo de informação, mas todos os que achei estavam descontinuados. Alguns tentei entrar em contato com os mantenedores, mas não tive muito sucesso. 
+- 💻 **#DEV** — Desenvolvimento de software
+- ⚙️ **#DEVOPS** — DevOps, engenharia de sistemas e infra
+- 📦 **#PRODUCT** — Criação de produtos tech
+- 🎨 **#DESIGN** — Design de produtos tech
+- 👥 **#MGMT** — Gerenciamento de times tech
 
-Então decidi começar esse projeto.
+## Funcionalidades
 
-## O que é a Tech Agenda 
+- Listagem e busca de eventos por nome, cidade, tags, modalidade (online/presencial) e disponibilidade
+- Página de detalhe de cada evento, com local no mapa e Call for Papers (CFP) quando houver
+- Login social (OAuth) e perfil do usuário
+- Confirmação de presença em eventos ("vou participar")
+- Páginas de gestão para criar e administrar eventos
 
-Acho que antes de mais nada é bom dizer que a proposta é ser um projeto Open Source em que todos são super bem-vindos a colaborar. 
+## Stack
 
-A respeito das funcionalidades, a Tech Agenda quer ser um centralizador de eventos que estejam acontecendo ou estejam para acontecer nas áreas de:
-- Desenvolvimento de Softwares #DEV
-- DevOps, Engenharia de Sistemas e Infra #DEVOPS
-- Criação de produtos Tech #PRODUCT
-- Design de produtos Tech #DESIGN
-- Gerenciamento de times tech #MGMT
-   
+| Camada | Tecnologia |
+|--------|------------|
+| Backend | Go 1.25, [Echo](https://echo.labstack.com/), [Uber fx](https://uber-go.github.io/fx/) (DI), [Cobra](https://cobra.dev/) (CLI) |
+| Frontend | React 18 + TypeScript, renderizado via **SSR** com [go-react-ssr](https://github.com/natewong1313/go-react-ssr), Tailwind, PrimeReact, Leaflet (mapas) |
+| Banco | PostgreSQL com [GORM](https://gorm.io/) e migrations via [goose](https://github.com/pressly/goose) |
+| Auth | OAuth via [goth](https://github.com/markbates/goth), sessões em cookie e JWT (ED25519) |
+
+> A UI **não** é uma SPA separada: o servidor Go renderiza o React e devolve HTML.
+> Os tipos consumidos pelo frontend são gerados a partir das structs Go.
+
+## Rodando localmente
+
+Pré-requisitos: **Go 1.25+** e **Docker** (para o Postgres). O frontend precisa de **Node**.
+
+```bash
+# 1. Suba o Postgres
+docker-compose up -d postgres
+
+# 2. Instale as dependências da UI
+cd ui && npm install && cd ..
+
+# 3. Configure o ambiente (ajuste conforme necessário)
+cp env.example .env.local
+
+# 4. Instale as ferramentas auxiliares (goose, go-enum)
+make install-deps
+
+# 5. Rode as migrations
+make migrate-up
+
+# 6. Suba a aplicação (http://localhost:8000)
+make run
+```
+
+Comandos úteis:
+
+```bash
+make new-migration migration=nome_da_migration   # cria uma migration
+make migrate-status                               # status das migrations
+make key-gen                                      # gera par de chaves ED25519 para o JWT
+go test ./...                                     # roda os testes
+golangci-lint run                                 # lint
+```
+
+## Estrutura do projeto
+
+```
+cmd/          Entrypoints da CLI (run, migrator, key-gen) — Cobra
+lib/          Infra compartilhada: config, database, server (Echo), ssr, session, logger
+pkg/          Módulos de domínio (event, user, venue, tag, cfp, attendee, oauth, ...)
+migrations/   Migrations goose (em Go)
+ui/           Frontend React/TypeScript (pages, components, organisms, molecules)
+```
+
+Cada módulo em `pkg/` é um módulo [fx](https://uber-go.github.io/fx/) (`fx.go`) com
+suas camadas (`model`, `service`, `router`). Para entender a arquitetura em detalhe
+— em especial o contrato Go↔TypeScript do SSR — veja o [`CLAUDE.md`](./CLAUDE.md).
+
+## Contribuindo
+
+A proposta é ser open source e **todo mundo é super bem-vindo a colaborar**. Para contribuir:
+
+1. Faça um fork e crie uma branch a partir da `main`.
+2. Garanta que `go build ./...` e `go test ./...` passam (toda mudança de código deve vir com teste cobrindo, ao menos de forma unitária).
+3. Abra um Pull Request descrevendo a mudança.
+
+## Licença
+
+[MIT](./LICENSE) © Marco Ollivier
