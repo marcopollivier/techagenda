@@ -1,6 +1,6 @@
 osArch:=$(shell uname -a)
 envfile:=.env.local
-ifeq ($(shell test ! -f .env.loical && echo -n yes),yes)
+ifeq ($(shell test ! -f .env.local && echo -n yes),yes)
 	envfile=env.example
 endif
 
