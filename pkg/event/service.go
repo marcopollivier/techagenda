@@ -73,7 +73,7 @@ func (e *EventService) Get(
 		Limit(limit)
 
 	if lo.IsNotEmpty(name) {
-		base.Where(fmt.Sprintf("title like '%%%s%%'", name))
+		base.Where("title LIKE ?", "%"+name+"%")
 	}
 	if lo.IsNotEmpty(city) {
 		base.Where("venues.city = ?", city)
