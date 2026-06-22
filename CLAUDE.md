@@ -56,7 +56,16 @@ Dependências de UI: `cd ui && npm install` (ou `yarn`). O `go-react-ssr` cuida 
 - Logging estruturado com `log/slog`; em handlers use as variantes `*Context` (`slog.ErrorContext(ctx, ...)`).
 - `samber/lo` é usado largamente para utilitários funcionais (`lo.Map`, `lo.IsNotEmpty`, etc.).
 - Enums Go: anote o tipo com `// ENUM(valor1, valor2)` e a diretiva `//go:generate go-enum --marshal --sql -f model.go` no topo; rode `go generate`.
-- Ainda **não há testes** no repositório — o CI roda `go test ./...` mas hoje passa vazio.
+
+## Testes
+
+**Regra: toda alteração de código deve vir com teste cobrindo a mudança, ao menos de forma unitária.** Antes de concluir qualquer mudança em `.go`:
+1. Verifique se já existe teste cobrindo o comportamento alterado; se não, crie um.
+2. Rode `go test ./...` (ou ao menos o pacote afetado) e garanta que passa.
+3. Para lógica pura (parsing, validação, regras), teste direto. Para código que depende do banco (services com `*gorm.DB`), use a abordagem de `pkg/event/service_sqli_test.go`: conexão GORM sobre `go-sqlmock` em vez de um Postgres real.
+4. Um bom teste deve **falhar** se a mudança for revertida — confirme isso quando o teste guardar uma correção de bug ou de segurança.
+
+A cobertura ainda é inicial (o projeto começou sem testes), então priorize cobrir o que você toca em vez de tentar cobrir tudo de uma vez. O CI roda `go test ./...` em todo push.
 
 ## Deploy
 
